@@ -1,32 +1,75 @@
 import React, { useState, useEffect } from 'react';
-import { getSounds } from '../services/api';
+import axios from 'axios';
 import SoundItem from '../components/SoundItem';
 
 const Home = () => {
   const [sounds, setSounds] = useState([]);
+  const [collections, setCollections] = useState([]);
 
   useEffect(() => {
-    getSounds()
-      .then(response => setSounds(response.data))
-      .catch(error => console.error('Error fetching sounds:', error));
+    const fetchSounds = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/sounds');
+        setSounds(response.data);
+      } catch (error) {
+        console.error('Ошибка при загрузке звуков:', error);
+      }
+    };
+
+    const fetchCollections = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Токен не найден, перенаправление на страницу входа');
+        window.location.href = '/login';
+        return;
+      }
+      try {
+        const response = await axios.get('http://localhost:5000/api/collections', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setCollections(response.data);
+      } catch (error) {
+        console.error('Ошибка при загрузке коллекций:', error);
+      }
+    };
+
+    fetchSounds();
+    fetchCollections();
   }, []);
+
+  const handleCreateCollection = async (name, soundId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Токен не найден, перенаправление на страницу входа');
+      window.location.href = '/login';
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/collections', { name }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const newCollection = response.data;
+      await axios.post('http://localhost:5000/api/collections/add_sound', { collectionId: newCollection.id, soundId }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setCollections([...collections, newCollection]);
+    } catch (error) {
+      console.error('Ошибка при создании коллекции:', error);
+    }
+  };
 
   return (
     <div>
-      <h1>Sound Library</h1>
-      <form method="get" action="/sounds" className="form-container">
-        <div className="input-group flex-grow-1">
-          <input type="text" className="form-control" name="search" placeholder="Search by title, category, or tags" />
-          <div className="input-group-append">
-            <button type="submit" className="btn btn-primary" title="Найти">
-              <i className="fas fa-search"></i>
-            </button>
-          </div>
-        </div>
-      </form>
-      <ul className="list-group mt-3">
-        {sounds.map(sound => (
-          <SoundItem key={sound.id} sound={sound} />
+      <h2>Главная страница</h2>
+      <ul>
+        {sounds.map((sound) => (
+          <SoundItem
+            key={sound.id}
+            sound={sound}
+            collections={collections}
+            onCollectionAdd={handleCreateCollection}
+          />
         ))}
       </ul>
     </div>

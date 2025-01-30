@@ -1,4 +1,4 @@
-.navbar-nav {
+/* .navbar-nav {
     text-align: center;
   }
   .container {
@@ -94,4 +94,123 @@
   .audio-container audio {
     width: 100%;
   }
-  
+   */
+
+   /* Подключение шрифта Nunito */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
+
+/* Общие стили для всего сайта */
+body {
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Стили для шапки */
+.header {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+.header a.logo {
+  text-decoration: none;
+  color: #333;
+  font-weight: 800;
+  font-size: 1.5rem;
+}
+
+.header .search-box {
+  display: flex;
+  justify-content: center;
+}
+
+.header .search-box input[type="text"] {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 400px;
+}
+
+.header .button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.header .button:hover {
+  background-color: #0056b3;
+}
+
+/* Стили для списка звуков */
+.sound-item {
+  padding: 1rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.sound-item h5 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.sound-characteristics {
+  margin-bottom: 0.5rem;
+}
+
+.characteristics-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.audio-container {
+  margin: 0.5rem 0;
+}
+
+.list-group-item {
+  list-style: none;
+  padding: 0;
+}
+
+/* Стили для формы создания коллекции */
+form {
+  margin-bottom: 1rem;
+}
+
+form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+form input[type="text"],
+form button[type="submit"] {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 0.5rem;
+}
+
+form button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+form button[type="submit"]:hover {
+  background-color: #0056b3;
+}
