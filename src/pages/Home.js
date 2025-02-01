@@ -61,7 +61,6 @@ const Home = () => {
 
   return (
     <div>
-      <h2>Главная страница</h2>
       <ul>
         {sounds.map((sound) => (
           <SoundItem

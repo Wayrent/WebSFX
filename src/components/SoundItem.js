@@ -21,8 +21,9 @@ const SoundItem = ({ sound, collections, onCollectionAdd }) => (
         Your browser does not support the audio element.
       </audio>
     </div>
-    <div className="d-flex justify-content-between mt-2">
-      <button onClick={() => onCollectionAdd(sound.id)} className="btn btn-secondary">Add to Collection</button>
+    <div className="button-group">
+      <button onClick={() => onCollectionAdd(sound.id)} className="btn btn-secondary">В коллекцию</button>
+      <button className="btn btn-primary">Скачать</button>
     </div>
   </li>
 );
