@@ -1,14 +1,10 @@
 /* Стили для подвала */
 .footer {
-    background-color: #000;
-    color: #fff;
-    text-align: center;
-    padding: 1rem;
-    width: 100%; /* Ширина 100% */
-    box-sizing: border-box; /* Учитываем отступы и границы */
-    position: absolute; /* Фиксируем подвал внизу страницы */
-    bottom: 0;
-    left: 0; /* Привязка к левому краю */
-    right: 0; /* Привязка к правому краю */
-  }
-  
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  width: 100%; /* Ширина 100% */
+  box-sizing: border-box; /* Учитываем отступы и границы */
+  margin-top: auto; /* Подталкивает подвал вниз */
+}

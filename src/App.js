@@ -13,7 +13,7 @@ import './styles/soundItem.css';
 const App = () => {
   return (
     <Router>
-      <div className="container">
+      <div className="app-container">
         <Header />
         <div className="main-content">
           <Routes>

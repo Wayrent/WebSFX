@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import api from '../services/api'; // Импортируем api для других запросов
+import api from '../services/api';
 import SoundItem from '../components/SoundItem';
-import Modal from '../components/Modal'; // Импортируем компонент модального окна
-import '../styles/profile.css'; // Подключаем стили для профиля
+import Modal from '../components/Modal';
+import UserInfo from '../components/UserInfo';
+import '../styles/profile.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const Profile = () => {
   const [collections, setCollections] = useState([]);
   const [soundsInCollection, setSoundsInCollection] = useState({});
   const [newCollectionName, setNewCollectionName] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Состояние для модального окна
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userData, setUserData] = useState({ email: '', note: '' });
+  const [expandedCollections, setExpandedCollections] = useState({});
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -26,8 +30,13 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCollections(response.data);
+
+        const userResponse = await api.get('/user', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUserData(userResponse.data);
       } catch (error) {
-        console.error('Ошибка при загрузке коллекций:', error);
+        console.error('Ошибка при загрузке данных:', error);
       }
     };
     fetchCollections();
@@ -62,7 +71,7 @@ const Profile = () => {
       });
       const newCollection = response.data;
       setCollections([...collections, newCollection]);
-      setIsModalOpen(false); // Закрытие модального окна после создания коллекции
+      setIsModalOpen(false);
     } catch (error) {
       console.error('Ошибка при создании коллекции:', error);
     }
@@ -86,36 +95,99 @@ const Profile = () => {
         delete updatedSounds[collectionId];
         return updatedSounds;
       });
+      setExpandedCollections((prev) => {
+        const updatedExpanded = { ...prev };
+        delete updatedExpanded[collectionId];
+        return updatedExpanded;
+      });
     } catch (error) {
       console.error('Ошибка при удалении коллекции:', error);
+    }
+  };
+
+  const toggleCollection = (collectionId) => {
+    setExpandedCollections((prev) => ({
+      ...prev,
+      [collectionId]: !prev[collectionId],
+    }));
+    if (!expandedCollections[collectionId]) {
+      fetchSoundsInCollection(collectionId);
+    }
+  };
+
+  const handleUpdateNote = async (note) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Токен не найден, перенаправление на страницу входа');
+      window.location.href = '/login';
+      return;
+    }
+
+    try {
+      await api.put('/user/note', { note }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUserData((prev) => ({ ...prev, note }));
+    } catch (error) {
+      console.error('Ошибка при обновлении заметки:', error);
     }
   };
 
   return (
     <div className="profile-container">
       <h2>Мой профиль</h2>
+      <UserInfo
+        email={userData.email}
+        note={userData.note}
+        onUpdateNote={handleUpdateNote}
+      />
       <button className="create-collection-button" onClick={() => setIsModalOpen(true)}>Создать коллекцию</button>
-      <ul className="collections-list">
-        {collections.map((collection) => (
-          <li key={collection.id} className="collection-item">
-            <h4>{collection.name}</h4>
-            <button onClick={() => fetchSoundsInCollection(collection.id)}>Показать звуки</button>
-            <button onClick={() => handleDeleteCollection(collection.id)} className="delete-button">Удалить коллекцию</button>
-            <ul>
-              {soundsInCollection[collection.id] &&
-                soundsInCollection[collection.id].map((sound) => (
-                  <SoundItem
-                    key={`${collection.id}-${sound.id}`} // Уникальный ключ для каждого звука
-                    sound={sound}
-                    collections={collections}
-                    onCollectionAdd={handleCreateCollection}
-                    isAuthenticated={isAuthenticated} // Передаем значение isAuthenticated
-                  />
-                ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
+      <div className="collections-section">
+        <h3>Мои коллекции</h3>
+        <ul className="collections-list">
+          {collections.map((collection) => (
+            <li key={collection.id} className="collection-item">
+              <div 
+                className="collection-header"
+                onClick={() => toggleCollection(collection.id)} // Добавляем обработчик нажатия на заголовок
+                style={{ cursor: 'pointer' }} // Добавляем курсор указателя для заголовка
+              >
+                <h4>{collection.name}</h4>
+                <div className="collection-actions">
+                  <button onClick={(e) => {
+                    e.stopPropagation(); // Останавливаем всплытие события
+                    toggleCollection(collection.id);
+                  }} 
+                  className="toggle-button">
+                    <i className={expandedCollections[collection.id] ? 'fas fa-chevron-down' : 'fas fa-chevron-right'}></i>
+                  </button>
+                  <button onClick={(e) => {
+                    e.stopPropagation(); // Останавливаем всплытие события
+                    handleDeleteCollection(collection.id);
+                  }} 
+                  className="delete-button">
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              {expandedCollections[collection.id] && (
+                <ul className="sound-list">
+                  {soundsInCollection[collection.id] &&
+                    soundsInCollection[collection.id].map((sound) => (
+                      <SoundItem
+                        key={`${collection.id}-${sound.id}`}
+                        sound={sound}
+                        collections={collections}
+                        onCollectionAdd={handleCreateCollection}
+                        isAuthenticated={isAuthenticated}
+                      />
+                    ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <h3>Создать коллекцию</h3>
         <form onSubmit={(e) => {
