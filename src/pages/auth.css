@@ -4,19 +4,21 @@
 .auth-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Расположим блок входа выше */
   height: 100vh;
-  background-color: #f8f9fa;
+  background-color: #ffffff; /* Фон страницы должен быть белым */
+  padding-top: 75px; /* Уменьшаем отступ сверху */
 }
 
 .auth-box {
   background-color: #f9f9f9;
   padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem; /* Закругленные края блока */
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1); /* Тень блока входа без смещения */
   max-width: 400px;
   width: 100%;
   text-align: center;
+  margin-top: 25px; /* Уменьшаем отступ для расположения блока ниже */
 }
 
 .auth-box h2 {

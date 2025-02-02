@@ -15,12 +15,14 @@ const App = () => {
     <Router>
       <div className="container">
         <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
+        <div className="main-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </div>
         <footer className="footer">
           &copy; {new Date().getFullYear()} SoundLibrary. Все права защищены.
         </footer>

@@ -54,9 +54,23 @@ const getSoundsInCollection = async (req, res) => {
   }
 };
 
+const deleteCollection = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.userId;
+  console.log('Deleting collection with id:', id, 'for user:', userId); // Логирование id коллекции и userId
+  try {
+    await query('DELETE FROM collections WHERE id = $1 AND user_id = $2', [id, userId]);
+    res.status(200).json({ message: 'Коллекция успешно удалена' });
+  } catch (error) {
+    console.error('Error deleting collection:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getCollections,
   createCollection,
   addSoundToCollection,
   getSoundsInCollection,
+  deleteCollection,
 };
