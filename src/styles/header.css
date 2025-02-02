@@ -1,13 +1,11 @@
-/* Стили для шапки */
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center; /* Выровняем элементы по центру по вертикали */
   padding: 1rem;
   background-color: #f8f9fa;
-  width: 100vw;
+  width: 100%;
   box-sizing: border-box;
-  margin: 0;
   position: fixed;
   top: 0;
   left: 0;
@@ -20,12 +18,14 @@
   color: #28a745;
   font-weight: 800;
   font-size: 1.5rem;
+  margin-left: 1rem;
 }
 
 .header .search-box {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-grow: 1;
 }
 
 .header .search-box input[type="text"] {
@@ -33,7 +33,8 @@
   border-radius: 0.25rem 0 0 0.25rem;
   border: 1px solid #ccc;
   width: 100%;
-  max-width: 600px;
+  max-width: 700px; /* Уменьшаем ширину поля поиска на 30% */
+  margin: 0.25rem 0;
 }
 
 .header .search-box .search-button {
@@ -44,6 +45,7 @@
   background-color: #28a745;
   color: white;
   cursor: pointer;
+  margin: 0.25rem 0;
 }
 
 .header .search-box .search-button:hover {
@@ -55,6 +57,8 @@
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
+  margin-right: 1rem; /* Отступ справа */
+  margin-top: -0.75rem; /* Увеличиваем отрицательный отступ сверху */
 }
 
 .header .button {
@@ -68,6 +72,7 @@
   font-size: 1rem;
   border-radius: 0.25rem;
   cursor: pointer;
+  margin: 0.25rem 0; /* Отступы сверху и снизу */
 }
 
 .header .button:hover {

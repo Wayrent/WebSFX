@@ -13,7 +13,7 @@
     margin-bottom: 1.5rem; /* Увеличиваем отступы между заголовками */
   }
   
-  button, .toggle-button, .delete-button {
+  button, .toggle-button, .delete-button, .create-collection-button {
     background-color: #28a745; /* Зеленый цвет */
     border: none;
     color: white;
@@ -23,7 +23,7 @@
     margin-top: 1rem; /* Добавляем отступ сверху для кнопок */
   }
   
-  button:hover, .toggle-button:hover, .delete-button:hover {
+  button:hover, .toggle-button:hover, .delete-button:hover, .create-collection-button:hover {
     background-color: #218838;
   }
   

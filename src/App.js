@@ -8,7 +8,7 @@ import Register from './pages/Register';
 import './styles/global.css';
 import './styles/header.css';
 import './styles/footer.css';
-import './styles/soundItem.css';  // Путь к файлу стилей
+import './styles/soundItem.css';
 
 const App = () => {
   return (

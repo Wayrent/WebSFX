@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api'; // Импортируем api для других запросов
 import SoundItem from '../components/SoundItem';
+import Modal from '../components/Modal'; // Импортируем компонент модального окна
 import '../styles/profile.css'; // Подключаем стили для профиля
 
 const Profile = () => {
@@ -8,6 +9,7 @@ const Profile = () => {
   const [soundsInCollection, setSoundsInCollection] = useState({});
   const [newCollectionName, setNewCollectionName] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Состояние для модального окна
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -60,6 +62,7 @@ const Profile = () => {
       });
       const newCollection = response.data;
       setCollections([...collections, newCollection]);
+      setIsModalOpen(false); // Закрытие модального окна после создания коллекции
     } catch (error) {
       console.error('Ошибка при создании коллекции:', error);
     }
@@ -91,24 +94,10 @@ const Profile = () => {
   return (
     <div className="profile-container">
       <h2>Мой профиль</h2>
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        handleCreateCollection(newCollectionName);
-        setNewCollectionName('');
-      }}>
-        <label>Создать коллекцию:</label>
-        <input
-          type="text"
-          value={newCollectionName}
-          onChange={(e) => setNewCollectionName(e.target.value)}
-          required
-        />
-        <button type="submit">Создать</button>
-      </form>
-      <h3>Мои коллекции</h3>
-      <ul>
+      <button className="create-collection-button" onClick={() => setIsModalOpen(true)}>Создать коллекцию</button>
+      <ul className="collections-list">
         {collections.map((collection) => (
-          <li key={collection.id}>
+          <li key={collection.id} className="collection-item">
             <h4>{collection.name}</h4>
             <button onClick={() => fetchSoundsInCollection(collection.id)}>Показать звуки</button>
             <button onClick={() => handleDeleteCollection(collection.id)} className="delete-button">Удалить коллекцию</button>
@@ -127,6 +116,22 @@ const Profile = () => {
           </li>
         ))}
       </ul>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <h3>Создать коллекцию</h3>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          handleCreateCollection(newCollectionName);
+        }}>
+          <label>Название коллекции:</label>
+          <input
+            type="text"
+            value={newCollectionName}
+            onChange={(e) => setNewCollectionName(e.target.value)}
+            required
+          />
+          <button type="submit">Создать</button>
+        </form>
+      </Modal>
     </div>
   );
 };

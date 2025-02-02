@@ -6,8 +6,9 @@
 
 /* Стиль для шапки */
 .header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto;
   align-items: center;
   padding: 1rem;
   background-color: #f8f9fa;
@@ -26,12 +27,14 @@
   color: #28a745;
   font-weight: 800;
   font-size: 1.5rem;
+  margin-left: 1rem;
 }
 
 .header .search-box {
   display: flex;
   justify-content: center;
   align-items: center;
+  grid-column: 2 / 3;
 }
 
 .header .search-box input[type="text"] {
@@ -39,7 +42,7 @@
   border-radius: 0.25rem 0 0 0.25rem;
   border: 1px solid #ccc;
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
 }
 
 .header .search-box .search-button {
@@ -61,6 +64,8 @@
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
+  grid-column: 3 / 4;
+  margin-right: 1rem;
 }
 
 .header .button {
