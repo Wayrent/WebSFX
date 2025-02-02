@@ -1,0 +1,117 @@
+.sound-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 1rem;
+  margin: 1rem auto;
+  max-width: 95%;
+  border: 1px solid #eee;
+  border-radius: 0.5rem;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
+.sound-item h5 {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.25rem;
+}
+
+.sound-characteristics {
+  grid-column: 1 / 2;
+  grid-row: 2 / 4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0;
+  align-items: start;
+}
+
+.characteristics-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: 0;
+}
+
+.sound-characteristics span {
+  display: inline-block;
+  padding: 2px 5px;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.sound-characteristics .tags,
+.sound-characteristics .category {
+  color: #a6a6a6;
+}
+
+.sound-characteristics .bitrate,
+.sound-characteristics .quality,
+.sound-characteristics .duration {
+  color: #8c8c8c;
+}
+
+.audio-container {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  justify-self: center;
+  align-self: start;
+  max-width: 300px;
+  width: 100%;
+  padding: 0;
+}
+
+.audio-container audio {
+  width: 100%;
+}
+
+.button-group {
+  grid-column: 3 / 4;
+  grid-row: 2 / 3;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.btn-primary {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #218838;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}

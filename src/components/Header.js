@@ -1,41 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/header.css';
 
-const Header = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsAuthenticated(false);
-    navigate('/login');
-  };
-
-  return (
-    <header className="header">
-      <Link to="/" className="logo">SoundLibrary</Link>
-      <div className="search-box">
-        <input type="text" placeholder="Search..." />
-        <button className="search-button">Найти</button>
-      </div>
-      {isAuthenticated ? (
-        <>
-          <Link to="/profile" className="button">Мой профиль</Link>
-          <button className="button" onClick={handleLogout}>Выйти</button>
-        </>
-      ) : (
-        <>
-          <Link to="/register" className="button">Регистрация</Link>
-          <Link to="/login" className="button">Войти</Link>
-        </>
-      )}
-    </header>
-  );
-};
+const Header = () => (
+  <header className="header">
+    <Link to="/" className="logo">SoundLibrary</Link>
+    <div className="search-box">
+      <input type="text" placeholder="Искать звуки..." />
+      <button className="search-button">Поиск</button>
+    </div>
+    <div className="button-group">
+      <Link to="/profile" className="button">Мой профиль</Link>
+      <Link to="/logout" className="button">Выйти</Link>
+    </div>
+  </header>
+);
 
 export default Header;

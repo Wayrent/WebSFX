@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import '../styles/soundItem.css'; // Обновленный путь к файлу стилей
 
-const SoundItem = ({ sound, collections, onCollectionAdd }) => (
+const SoundItem = ({ sound, collections, onCollectionAdd, isAuthenticated }) => (
   <li className="list-group-item sound-item">
     <h5>{sound.title}</h5>
     <div className="sound-characteristics">
@@ -22,7 +23,11 @@ const SoundItem = ({ sound, collections, onCollectionAdd }) => (
       </audio>
     </div>
     <div className="button-group">
-      <button onClick={() => onCollectionAdd(sound.id)} className="btn btn-secondary">В коллекцию</button>
+      {isAuthenticated ? (
+        <button onClick={() => onCollectionAdd(sound.id)} className="btn btn-secondary">В коллекцию</button>
+      ) : (
+        <button onClick={() => alert('Войдите, чтобы добавить звук в коллекцию!')} className="btn btn-secondary">В коллекцию</button>
+      )}
       <button className="btn btn-primary">Скачать</button>
     </div>
   </li>
@@ -42,6 +47,7 @@ SoundItem.propTypes = {
   }).isRequired,
   collections: PropTypes.array.isRequired,
   onCollectionAdd: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool.isRequired,
 };
 
 export default SoundItem;

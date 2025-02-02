@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './auth.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -20,24 +21,27 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h2>Войти</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Email:
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </label>
-        <label>
-          Пароль:
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </label>
-        <button type="submit">Войти</button>
-      </form>
+    <div className="auth-container">
+      <div className="auth-box">
+        <h2>Войти</h2>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Email:
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </label>
+          <label>
+            Пароль:
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          </label>
+          <button type="submit">Войти</button>
+        </form>
+      </div>
     </div>
   );
 };
 
 export default Login;
+
 
 
 

@@ -1,27 +1,29 @@
-/* Подключение шрифта Nunito */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
-
-/* Общие стили для всего сайта */
-body {
-  font-family: 'Nunito', sans-serif;
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Стили для шапки */
+/* Стиль для шапки */
 .header {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 1rem;
   padding: 1rem;
   background-color: #f8f9fa;
+  width: 100vw;
+  box-sizing: border-box;
+  margin: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
-.header a.logo {
+.header .logo {
   text-decoration: none;
-  color: #28a745; /* Зеленый цвет для названия сайта */
+  color: #28a745;
   font-weight: 800;
   font-size: 1.5rem;
 }
@@ -37,7 +39,7 @@ body {
   border-radius: 0.25rem 0 0 0.25rem;
   border: 1px solid #ccc;
   width: 100%;
-  max-width: 300px;
+  max-width: 600px;
 }
 
 .header .search-box .search-button {
@@ -45,7 +47,7 @@ body {
   border-radius: 0 0.25rem 0.25rem 0;
   border: 1px solid #ccc;
   border-left: none;
-  background-color: #28a745; /* Зеленый цвет */
+  background-color: #28a745;
   color: white;
   cursor: pointer;
 }
@@ -54,8 +56,15 @@ body {
   background-color: #218838;
 }
 
+.header .button-group {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
 .header .button {
-  background-color: #28a745; /* Зеленый цвет */
+  background-color: #28a745;
   border: none;
   color: white;
   padding: 0.5rem 1rem;
@@ -69,202 +78,4 @@ body {
 
 .header .button:hover {
   background-color: #218838;
-}
-
-/* Стили для списка звуков */
-.sound-item {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px 20px;
-  align-items: center;
-  padding: 0.5rem; /* Уменьшаем внутренние отступы */
-  margin: 0.5rem 10px; /* Уменьшаем внешние отступы */
-  border: 1px solid #eee; /* Добавление границы */
-  border-radius: 0.5rem; /* Скругленные углы */
-  background-color: #f9f9f9; /* Цвет фона */
-}
-
-.sound-item h5 {
-  grid-column: 1 / 3;
-  margin: 10px; /* Отступ названия от края блока */
-  font-weight: 800; /* Жирный шрифт */
-  font-size: 1.25rem;
-}
-
-.sound-characteristics {
-  grid-column: 1 / 3;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 0.5rem;
-  padding: 0 10px; /* Отступы для характеристик */
-}
-
-.characteristics-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 10px;
-}
-
-.sound-characteristics span {
-  display: inline-block;
-  padding: 2px 5px;
-  border-radius: 5px;
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-.sound-characteristics .tags,
-.sound-characteristics .category {
-  color: #a6a6a6;
-}
-
-.sound-characteristics .bitrate,
-.sound-characteristics .quality,
-.sound-characteristics .duration {
-  color: #8c8c8c;
-}
-
-.audio-container {
-  grid-column: 1 / 3;
-  justify-self: center;
-  align-self: center;
-  max-width: 300px;
-  width: 100%;
-  padding: 0 15px; /* Добавление отступа */
-}
-
-.audio-container audio {
-  width: 100%;
-}
-
-.button-group {
-  grid-column: 2 / 3;
-  display: flex;
-  gap: 10px; /* Отступ между кнопками */
-  justify-content: flex-end;
-}
-
-.btn-primary {
-  background-color: #28a745; /* Зеленый цвет */
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-}
-
-.btn-primary:hover {
-  background-color: #218838;
-}
-
-/* Стили для кнопок */
-.btn-primary,
-.btn-danger,
-.btn-warning {
-  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-
-.btn-primary:hover,
-.btn-danger:hover,
-.btn-warning:hover {
-  transform: scale(1.05);
-}
-
-/* Дополнительные стили */
-.navbar-nav {
-  text-align: center;
-}
-
-.container {
-  padding: 0 15px;
-}
-
-.list-group-item {
-  font-size: 14px;
-  list-style: none;
-  padding: 0;
-}
-
-.audio.mb-2 {
-  margin-bottom: 10px;
-}
-
-.d-flex.justify-content-between .btn {
-  margin-right: 10px;
-}
-
-.form-container {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-
-button.btn {
-  position: relative;
-}
-
-button.btn i {
-  margin-right: 5px;
-}
-
-button.btn[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #000;
-  color: #fff;
-  padding: 5px;
-  border-radius: 5px;
-  white-space: nowrap;
-  font-size: 12px;
-}
-
-/* Стили для формы создания коллекции */
-form {
-  margin-bottom: 1rem;
-}
-
-form label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-form input[type="text"],
-form button[type="submit"] {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #ccc;
-  width: 100%;
-  max-width: 400px;
-  margin-bottom: 0.5rem;
-}
-
-form button[type="submit"] {
-  background-color: #28a745; /* Зеленый цвет */
-  color: white;
-  cursor: pointer;
-}
-
-form button[type="submit"]:hover {
-  background-color: #218838;
-}
-
-/* Стили для подвала */
-.footer {
-  background-color: #000;
-  color: #fff;
-  text-align: center;
-  padding: 1rem;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
 }

@@ -5,21 +5,26 @@ import Profile from './pages/Profile';
 import Header from './components/Header';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import './styles.css';
+import './styles/global.css';
+import './styles/header.css';
+import './styles/footer.css';
+import './styles/soundItem.css';  // Путь к файлу стилей
 
 const App = () => {
   return (
     <Router>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-      <footer className="footer">
-        &copy; {new Date().getFullYear()} SoundLibrary. Все права защищены.
-      </footer>
+      <div className="container">
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+        <footer className="footer">
+          &copy; {new Date().getFullYear()} SoundLibrary. Все права защищены.
+        </footer>
+      </div>
     </Router>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './auth.css';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -21,28 +22,31 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <h2>Регистрация</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Имя пользователя:
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
-        </label>
-        <label>
-          Email:
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </label>
-        <label>
-          Пароль:
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </label>
-        <button type="submit">Зарегистрироваться</button>
-      </form>
+    <div className="auth-container">
+      <div className="auth-box">
+        <h2>Регистрация</h2>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Имя пользователя:
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+          </label>
+          <label>
+            Email:
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </label>
+          <label>
+            Пароль:
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          </label>
+          <button type="submit">Зарегистрироваться</button>
+        </form>
+      </div>
     </div>
   );
 };
 
 export default Register;
+
 
 
 
