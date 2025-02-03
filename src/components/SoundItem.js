@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import '../styles/soundItem.css'; // Обновленный путь к файлу стилей
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons'; // Импортируем значок загрузки
 
 const SoundItem = ({ sound, collections, onCollectionAdd, isAuthenticated }) => (
   <li className="list-group-item sound-item">
@@ -28,7 +30,9 @@ const SoundItem = ({ sound, collections, onCollectionAdd, isAuthenticated }) => 
       ) : (
         <button onClick={() => alert('Войдите, чтобы добавить звук в коллекцию!')} className="btn btn-secondary">В коллекцию</button>
       )}
-      <button className="btn btn-primary">Скачать</button>
+      <button className="btn btn-primary">
+        <FontAwesomeIcon icon={faDownload} />
+      </button>
     </div>
   </li>
 );

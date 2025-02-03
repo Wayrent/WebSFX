@@ -66,6 +66,7 @@
   max-width: 300px;
   width: 100%;
   padding: 0;
+  margin-top: -5%; /* Поднимаем проигрыватель выше */
 }
 
 .audio-container audio {
@@ -77,7 +78,7 @@
   grid-row: 2 / 3;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center; /* Выровняем кнопки по центру */
   gap: 10px;
   padding-top: 10px;
 }
@@ -93,6 +94,7 @@
   font-size: 1rem;
   border-radius: 0.25rem;
   cursor: pointer;
+  margin-top: -2rem; /* Поднимаем кнопки с помощью отрицательного отступа еще выше */
 }
 
 .btn-primary:hover {
@@ -110,6 +112,7 @@
   font-size: 1rem;
   border-radius: 0.25rem;
   cursor: pointer;
+  margin-top: -2rem; /* Поднимаем кнопки с помощью отрицательного отступа еще выше */
 }
 
 .btn-secondary:hover {
