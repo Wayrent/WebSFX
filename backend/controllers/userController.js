@@ -2,8 +2,10 @@ const { query } = require('../models/userModel');
 
 const getUserData = async (req, res) => {
   const userId = req.user.userId;
+  console.log('Fetching user data for user:', userId);
   try {
     const result = await query('SELECT email, note FROM users WHERE id = $1', [userId]);
+    console.log('Query result:', result.rows);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -17,6 +19,7 @@ const getUserData = async (req, res) => {
 const updateUserNote = async (req, res) => {
   const userId = req.user.userId;
   const { note } = req.body;
+  console.log('Updating note for user:', userId, 'with note:', note);
   try {
     await query('UPDATE users SET note = $1 WHERE id = $2', [note, userId]);
     res.status(200).json({ message: 'Note updated successfully' });

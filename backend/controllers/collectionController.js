@@ -2,10 +2,10 @@ const { query } = require('../models/collectionModel');
 
 const getCollections = async (req, res) => {
   const userId = req.user.userId;
-  console.log('Fetching collections for user:', userId); // Логирование userId
+  console.log('Fetching collections for user:', userId);
   try {
     const result = await query('SELECT * FROM collections WHERE user_id = $1', [userId]);
-    console.log('Fetched collections:', result.rows); // Логирование данных коллекций
+    console.log('Fetched collections:', result.rows);
     res.status(200).json(result.rows);
   } catch (error) {
     console.error('Error fetching collections:', error);
@@ -16,10 +16,10 @@ const getCollections = async (req, res) => {
 const createCollection = async (req, res) => {
   const { name } = req.body;
   const userId = req.user.userId;
-  console.log('Creating collection for user:', userId, 'with name:', name); // Логирование данных коллекции
+  console.log('Creating collection for user:', userId, 'with name:', name);
   try {
     const result = await query('INSERT INTO collections (user_id, name) VALUES ($1, $2) RETURNING *', [userId, name]);
-    console.log('Collection created:', result.rows[0]); // Логирование созданной коллекции
+    console.log('Collection created:', result.rows[0]);
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Error creating collection:', error);
@@ -57,7 +57,7 @@ const getSoundsInCollection = async (req, res) => {
 const deleteCollection = async (req, res) => {
   const { id } = req.params;
   const userId = req.user.userId;
-  console.log('Deleting collection with id:', id, 'for user:', userId); // Логирование id коллекции и userId
+  console.log('Deleting collection with id:', id, 'for user:', userId);
   try {
     await query('DELETE FROM collections WHERE id = $1 AND user_id = $2', [id, userId]);
     res.status(200).json({ message: 'Коллекция успешно удалена' });

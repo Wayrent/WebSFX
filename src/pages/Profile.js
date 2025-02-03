@@ -16,15 +16,15 @@ const Profile = () => {
   const [expandedCollections, setExpandedCollections] = useState({});
 
   useEffect(() => {
-    const fetchCollections = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.error('Токен не найден, перенаправление на страницу входа');
-        window.location.href = '/login';
-        return;
-      }
-      setIsAuthenticated(!!token);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Токен не найден, перенаправление на страницу входа');
+      window.location.href = '/login';
+      return;
+    }
+    setIsAuthenticated(!!token);
 
+    const fetchCollections = async () => {
       try {
         const response = await api.get('/collections', {
           headers: { Authorization: `Bearer ${token}` }
@@ -34,11 +34,13 @@ const Profile = () => {
         const userResponse = await api.get('/user', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setUserData(userResponse.data);
+        const { email, note } = userResponse.data;
+        setUserData({ email, note: note || '' }); // Инициализация note значением по умолчанию
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
       }
     };
+
     fetchCollections();
   }, []);
 
@@ -149,20 +151,20 @@ const Profile = () => {
             <li key={collection.id} className="collection-item">
               <div 
                 className="collection-header"
-                onClick={() => toggleCollection(collection.id)} // Добавляем обработчик нажатия на заголовок
-                style={{ cursor: 'pointer' }} // Добавляем курсор указателя для заголовка
+                onClick={() => toggleCollection(collection.id)}
+                style={{ cursor: 'pointer' }}
               >
                 <h4>{collection.name}</h4>
                 <div className="collection-actions">
                   <button onClick={(e) => {
-                    e.stopPropagation(); // Останавливаем всплытие события
+                    e.stopPropagation();
                     toggleCollection(collection.id);
                   }} 
                   className="toggle-button">
                     <i className={expandedCollections[collection.id] ? 'fas fa-chevron-down' : 'fas fa-chevron-right'}></i>
                   </button>
                   <button onClick={(e) => {
-                    e.stopPropagation(); // Останавливаем всплытие события
+                    e.stopPropagation();
                     handleDeleteCollection(collection.id);
                   }} 
                   className="delete-button">
