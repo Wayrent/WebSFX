@@ -1,3 +1,29 @@
+# SoundFX - Библиотека звуковых эффектов
+
+## Описание проекта
+SoundFX - это веб-приложение для управления и прослушивания звуковых эффектов. Пользователи могут:
+- Просматривать звуки по категориям
+- Создавать коллекции для организации звуков
+- Добавлять звуки в избранное
+- Скачивать звуки с ограничениями на количество загрузок
+- Администраторы могут загружать новые звуки
+
+## Технологии
+- **Backend**: Node.js + Express.js + PostgreSQL
+- **Frontend**: React.js + React Router DOM + Axios + Context API
+- **Аутентификация**: JWT + bcryptjs
+- **Стили**: CSS + Font Awesome
+- **Инструменты**: NPM/Yarn, Git, Postman, pgAdmin 4
+
+## Установка и запуск
+1. Клонируйте репозиторий:
+   ```bash
+   git clone https://github.com/your-repo/soundfx.git
+   cd soundfx
+
+------------------------------------------------
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

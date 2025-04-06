@@ -5,17 +5,19 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import '@fortawesome/fontawesome-free/css/all.min.css'; // Импортируем Font Awesome
 
+// Создание корневого элемента
 const container = document.getElementById('root');
 const root = createRoot(container);
+
+// Рендеринг приложения
 root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
 
+// Отчет о производительности
 reportWebVitals();
-
-
 
 // import 'bootstrap/dist/css/bootstrap.min.css'; // Подключение стилей Bootstrap
 // import React from 'react';

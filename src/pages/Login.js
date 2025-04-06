@@ -1,20 +1,40 @@
+// Login.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../pages/auth.css'; // Убедимся, что файл стилей подключен
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext'; // Используем контекст аутентификации
+import '../pages/auth.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate(); // Используем useNavigate здесь
+  const { login } = useAuth(); // Используем метод login из контекста
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccessMessage('');
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token);
-      navigate('/profile'); // Перенаправление на страницу профиля
+      const token = response.data.token;
+
+      // Вызываем метод login из контекста с данными пользователя
+      login({ token, email });
+
+      setSuccessMessage('Успешный вход!');
+      setTimeout(() => {
+        setSuccessMessage('');
+        navigate('/profile'); // Перенаправляем на страницу профиля
+      }, 1000);
     } catch (error) {
+      if (error.response && error.response.data && error.response.data.error) {
+        setError(error.response.data.error);
+      } else {
+        setError('Произошла ошибка при входе. Попробуйте позже.');
+      }
       console.error('Ошибка при входе:', error);
     }
   };
@@ -23,14 +43,26 @@ const Login = () => {
     <div className="auth-container">
       <div className="auth-box">
         <h2>Войти</h2>
+        {successMessage && <p className="success-message">{successMessage}</p>}
+        {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
           <label>
             Email:
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </label>
           <label>
             Пароль:
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </label>
           <button type="submit">Войти</button>
         </form>
@@ -40,89 +72,3 @@ const Login = () => {
 };
 
 export default Login;
-
-
-
-// // import React, { useState } from 'react';
-// // import axios from 'axios';
-
-// // const Login = ({ setIsAuthenticated }) => {
-// //   const [formData, setFormData] = useState({
-// //     email: '',
-// //     password: '',
-// //   });
-
-// //   const handleChange = (e) => {
-// //     setFormData({
-// //       ...formData,
-// //       [e.target.name]: e.target.value,
-// //     });
-// //   };
-
-// //   const handleSubmit = async (e) => {
-// //     e.preventDefault();
-// //     try {
-// //       const response = await axios.post('http://localhost:5000/api/auth/login', formData);
-// //       localStorage.setItem('token', response.data.token);
-// //       setIsAuthenticated(true);
-// //       alert('Login successful!');
-// //     } catch (error) {
-// //       console.error('Error logging in user:', error);
-// //       alert('Login failed');
-// //     }
-// //   };
-
-// //   return (
-// //     <div>
-// //       <h2>Login</h2>
-// //       <form onSubmit={handleSubmit}>
-// //         <div>
-// //           <label>Email:</label>
-// //           <input type="email" name="email" value={formData.email} onChange={handleChange} required />
-// //         </div>
-// //         <div>
-// //           <label>Password:</label>
-// //           <input type="password" name="password" value={formData.password} onChange={handleChange} required />
-// //         </div>
-// //         <button type="submit">Login</button>
-// //       </form>
-// //     </div>
-// //   );
-// // };
-
-// // export default Login;
-
-// import React, { useState } from 'react';
-// import axios from 'axios';
-
-// const Login = () => {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-//       const { token } = response.data;
-//       localStorage.setItem('token', token); // Сохранение токена в localStorage
-//       window.location.href = '/';
-//     } catch (error) {
-//       console.error('Error logging in:', error);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h2>Login</h2>
-//       <form onSubmit={handleSubmit}>
-//         <label>Email:</label>
-//         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-//         <label>Password:</label>
-//         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-//         <button type="submit">Login</button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default Login;

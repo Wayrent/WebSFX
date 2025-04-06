@@ -1,3 +1,4 @@
+/* Стили для заголовка */
 .header {
   display: flex;
   justify-content: space-between;
@@ -13,6 +14,7 @@
   z-index: 1000;
 }
 
+/* Стили для логотипа */
 .header .logo {
   text-decoration: none;
   color: #28a745;
@@ -21,6 +23,7 @@
   margin-left: 1rem;
 }
 
+/* Стили для блока поиска */
 .header .search-box {
   display: flex;
   justify-content: center;
@@ -52,6 +55,7 @@
   background-color: #218838;
 }
 
+/* Стили для группы кнопок */
 .header .button-group {
   display: flex;
   justify-content: flex-end;
@@ -61,20 +65,36 @@
   margin-top: -0.75rem; /* Увеличиваем отрицательный отступ сверху */
 }
 
+/* Общие стили для кнопок */
 .header .button {
-  background-color: #28a745;
-  border: none;
-  color: white;
   padding: 0.5rem 1rem;
   text-align: center;
   text-decoration: none;
-  display: inline-block;
   font-size: 1rem;
   border-radius: 0.25rem;
   cursor: pointer;
   margin: 0.25rem 0; /* Отступы сверху и снизу */
 }
 
-.header .button:hover {
+/* Стили для кнопки "Мой профиль" */
+.header .profile-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+.header .profile-button:hover {
   background-color: #218838;
+}
+
+/* Стили для кнопки "Выйти" */
+.header .logout-button {
+  background-color: #6c757d; /* Серый цвет */
+  color: rgb(255, 255, 255);
+  border: none;
+}
+
+.header .logout-button:hover {
+  background-color: #d66363; /* Темно-серый цвет при наведении */
+  color: rgb(255, 255, 255);
 }

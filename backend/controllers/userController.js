@@ -1,11 +1,16 @@
 const { query } = require('../models/userModel');
 
+// Получение данных пользователя
 const getUserData = async (req, res) => {
-  const userId = req.user.userId;
-  console.log('Fetching user data for user:', userId);
+  const userId = req.user?.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'User ID not found in token' });
+  }
   try {
-    const result = await query('SELECT email, note FROM users WHERE id = $1', [userId]);
-    console.log('Query result:', result.rows);
+    const result = await query(
+      'SELECT email, note, subscription_status, downloads_today, role FROM users WHERE id = $1',
+      [userId]
+    );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -16,9 +21,15 @@ const getUserData = async (req, res) => {
   }
 };
 
+// Обновление заметки пользователя
 const updateUserNote = async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user?.userId;
   const { note } = req.body;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'User ID not found in token' });
+  }
+
   console.log('Updating note for user:', userId, 'with note:', note);
   try {
     await query('UPDATE users SET note = $1 WHERE id = $2', [note, userId]);
