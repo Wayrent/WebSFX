@@ -79,7 +79,7 @@ const addSoundToCollection = async (req, res) => {
   if (!userId) {
     return res.status(401).json({ 
       success: false,
-      error: 'User ID not found' 
+      error: 'Authentication required' 
     });
   }
 
@@ -97,6 +97,19 @@ const addSoundToCollection = async (req, res) => {
       });
     }
 
+    // Проверяем существование звука
+    const soundCheck = await query(
+      'SELECT 1 FROM sounds WHERE id = $1',
+      [soundId]
+    );
+
+    if (soundCheck.rowCount === 0) {
+      return res.status(404).json({ 
+        success: false,
+        error: 'Sound not found' 
+      });
+    }
+
     const result = await query(
       'INSERT INTO collection_sounds (collection_id, sound_id) VALUES ($1, $2) RETURNING *',
       [collectionId, soundId]
@@ -107,7 +120,7 @@ const addSoundToCollection = async (req, res) => {
       data: result.rows[0]
     });
   } catch (error) {
-    console.error('Error adding sound to collection:', error);
+    console.error('Error adding sound:', error);
     
     if (error.code === '23505') { // Unique violation
       return res.status(400).json({ 
@@ -221,10 +234,64 @@ const deleteCollection = async (req, res) => {
   }
 };
 
+const removeSoundFromCollection = async (req, res) => {
+  const { collectionId, soundId } = req.params;
+  const userId = req.user?.userId;
+
+  if (!userId) {
+    return res.status(401).json({ 
+      success: false,
+      error: 'Authentication required' 
+    });
+  }
+
+  try {
+    // Проверяем принадлежность коллекции пользователю
+    const collectionCheck = await query(
+      'SELECT 1 FROM collections WHERE id = $1 AND user_id = $2',
+      [collectionId, userId]
+    );
+
+    if (collectionCheck.rowCount === 0) {
+      return res.status(403).json({ 
+        success: false,
+        error: 'Collection not found or access denied' 
+      });
+    }
+
+    const result = await query(
+      'DELETE FROM collection_sounds WHERE collection_id = $1 AND sound_id = $2 RETURNING *',
+      [collectionId, soundId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ 
+        success: false,
+        error: 'Sound not found in this collection' 
+      });
+    }
+
+    res.status(200).json({ 
+      success: true,
+      message: 'Sound removed from collection' 
+    });
+  } catch (error) {
+    console.error('Error removing sound:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to remove sound from collection',
+      details: error.message
+    });
+  }
+};
+
+
+// Добавляем в экспорт
 module.exports = {
   getCollections,
   createCollection,
   addSoundToCollection,
   getSoundsInCollection,
-  deleteCollection
+  deleteCollection,
+  removeSoundFromCollection
 };

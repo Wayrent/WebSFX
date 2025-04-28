@@ -358,3 +358,16 @@ button.toggle-button:hover {
 .modal-actions button:disabled {
   background-color: #cccccc;
 }
+
+/* Добавляем в конец файла */
+.collection-content .sound-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.collection-content .sound-item {
+  margin-bottom: 0;
+  border: 1px solid #e0e0e0;
+}

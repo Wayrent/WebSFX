@@ -23,20 +23,33 @@ const SoundItem = ({
 
   return (
     <div className="sound-item">
-      <h5>{sound.title}</h5>
-      <div className="sound-characteristics">
-        <span className="category">{sound.category}</span>
-        <span className="tags">Tags: {sound.tags}</span>
-        <span className="bitrate">Bitrate: {sound.bitrate}</span>
-        <span className="duration">Duration: {sound.duration}s</span>
+      <div className="sound-header">
+        <h5>{sound.title}</h5>
+        <div className="sound-characteristics">
+          <span className="category">{sound.category}</span>
+          <span className="tags">Tags: {sound.tags}</span>
+          <span className="bitrate">Bitrate: {sound.bitrate}</span>
+          <span className="duration">Duration: {sound.duration}s</span>
+        </div>
       </div>
-      <audio controls src={sound.url} />
-      <div className="button-group">
-        <button onClick={handleAddToCollection}>
+      
+      <div className="audio-player-container">
+        <audio controls src={sound.url} className="audio-player" />
+      </div>
+      
+      <div className="sound-actions">
+        <button 
+          className="add-to-collection-btn"
+          onClick={handleAddToCollection}
+        >
           Add to Collection
         </button>
-        <button onClick={() => console.log('Download:', sound.id)}>
+        <button 
+          className="download-btn"
+          onClick={() => console.log('Download:', sound.id)}
+        >
           <FontAwesomeIcon icon={faDownload} />
+          <span>Download</span>
         </button>
       </div>
       

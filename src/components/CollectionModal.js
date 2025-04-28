@@ -18,21 +18,25 @@ const CollectionModal = ({ soundId, collections, onClose, onToggleSoundInCollect
         setLoading(true);
         setError('');
         
-        // Проверяем, в каких коллекциях уже есть этот звук
         const results = await Promise.all(
           collections.map(async (collection) => {
-            const response = await apiGetSoundCollections(collection.id);
-            if (response.success) {
-              return response.data.some(s => s.id === soundId) ? collection.id : null;
+            try {
+              const response = await apiGetSoundCollections(collection.id);
+              if (response.success) {
+                return response.data.some(s => s.id === soundId) ? collection.id : null;
+              }
+              return null;
+            } catch (err) {
+              console.error(`Error checking collection ${collection.id}:`, err);
+              return null;
             }
-            return null;
           })
         );
         
         setSelectedCollections(results.filter(id => id !== null));
       } catch (err) {
         console.error('Error loading collections:', err);
-        setError(err.message || 'Failed to load collections');
+        setError('Failed to load collections');
       } finally {
         setLoading(false);
       }
@@ -73,6 +77,9 @@ const CollectionModal = ({ soundId, collections, onClose, onToggleSoundInCollect
     } catch (err) {
       console.error('Error updating collection:', err);
       setError(err.message || 'Operation failed');
+      
+      // Возвращаем предыдущее состояние при ошибке
+      setSelectedCollections(prev => [...prev]);
     } finally {
       setLoading(false);
     }

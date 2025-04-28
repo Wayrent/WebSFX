@@ -1,169 +1,143 @@
 .sound-item {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  grid-template-rows: auto 1fr auto;
-  gap: 10px;
-  align-items: center;
-  padding: 1rem;
-  margin: 1rem auto;
-  max-width: 95%;
-  border: 1px solid #eee;
-  border-radius: 0.5rem;
-  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  margin-bottom: 25px;
+  border: 1px solid #e1e4e8;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
   box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.sound-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sound-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .sound-item h5 {
-  grid-column: 1 / 2;
-  grid-row: 1 / 2;
   margin: 0;
-  font-weight: 800;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
+  color: #24292e;
+  font-weight: 600;
 }
 
 .sound-characteristics {
-  grid-column: 1 / 2;
-  grid-row: 2 / 4;
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  padding: 0;
-  align-items: start;
-}
-
-.characteristics-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 10px;
-  margin: 0;
+  gap: 8px;
 }
 
 .sound-characteristics span {
-  display: inline-block;
-  padding: 2px 5px;
-  border-radius: 5px;
-  background-color: #f0f0f0;
-  color: #333;
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
-.sound-characteristics .tags,
 .sound-characteristics .category {
-  color: #a6a6a6;
+  background-color: #e3f2fd;
+  color: #1976d2;
 }
 
-.sound-characteristics .bitrate,
-.sound-characteristics .quality,
+.sound-characteristics .tags {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.sound-characteristics .bitrate {
+  background-color: #f3e5f5;
+  color: #8e24aa;
+}
+
 .sound-characteristics .duration {
-  color: #8c8c8c;
+  background-color: #fff3e0;
+  color: #fb8c00;
 }
 
-.audio-container {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
-  justify-self: center;
-  align-self: start;
-  max-width: 300px;
-  width: 100%;
-  padding: 0;
-  margin-top: -5%; /* Поднимаем проигрыватель выше */
-}
-
-.audio-container audio {
-  width: 100%;
-}
-
-.button-group {
-  grid-column: 3 / 4;
-  grid-row: 2 / 3;
+.audio-player-container {
   display: flex;
   justify-content: center;
-  align-items: center; /* Выровняем кнопки по центру */
-  gap: 10px;
-  padding-top: 10px;
-}
-
-.btn-primary {
-  background-color: #28a745;
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  margin-top: -2rem; /* Поднимаем кнопки с помощью отрицательного отступа еще выше */
-}
-
-.btn-primary:hover {
-  background-color: #218838;
-}
-
-.btn-secondary {
-  background-color: #6c757d;
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  margin-top: -2rem; /* Поднимаем кнопки с помощью отрицательного отступа еще выше */
-}
-
-.btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin: 10px 0;
 }
 
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
+.audio-player {
+  width: 100%;
   max-width: 400px;
-  width: 100%;
+  border-radius: 6px;
 }
 
-.collection-list {
-  list-style: none;
-  padding: 0;
+.sound-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
 }
 
-.collection-item {
-  margin-bottom: 10px;
-}
-
-.collection-item label {
+.add-to-collection-btn,
+.download-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.modal-close-button {
-  display: block;
-  margin-top: 20px;
-  padding: 10px 20px;
+.add-to-collection-btn {
   background-color: #28a745;
   color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
 }
 
-.modal-close-button:hover {
+.add-to-collection-btn:hover {
   background-color: #218838;
+}
+
+.download-btn {
+  background-color: #f1f3f4;
+  color: #3c4043;
+}
+
+.download-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.download-btn span {
+  margin-left: 5px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 600px) {
+  .sound-item {
+    padding: 15px;
+  }
+  
+  .sound-characteristics {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .sound-actions {
+    flex-direction: column;
+  }
+  
+  .add-to-collection-btn,
+  .download-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }

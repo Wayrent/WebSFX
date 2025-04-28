@@ -115,4 +115,53 @@
   border: 1px dashed #ddd;
   border-radius: 4px;
   margin: 10px 0;
+  background-color: #f9f9f9;
+}
+
+.collection-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.collection-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.collection-item label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.collection-item input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.collection-item.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
+.modal-actions button {
+  padding: 8px 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-actions button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }

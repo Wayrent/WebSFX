@@ -197,9 +197,11 @@ export const removeSoundFromCollection = async (collectionId, soundId) => {
       data: response.data
     };
   } catch (error) {
+    console.error('Error removing sound:', error);
     return {
       success: false,
-      error: error.response?.data?.error || 'Failed to remove sound from collection'
+      error: error.response?.data?.error || 'Failed to remove sound from collection',
+      status: error.response?.status
     };
   }
 };
