@@ -38,15 +38,17 @@ const getSounds = async () => {
       ORDER BY id DESC
     `);
     
+    // Возвращаем единообразный формат
     return {
       success: true,
-      data: result.rows
+      data: result.rows // Гарантированно массив
     };
   } catch (error) {
     console.error('Database error:', error);
     return {
       success: false,
-      error: 'Failed to fetch sounds from database'
+      error: 'Failed to fetch sounds from database',
+      data: [] // Гарантированно массив даже при ошибке
     };
   }
 };

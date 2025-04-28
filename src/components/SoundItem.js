@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import CollectionModal from './CollectionModal';
-import '../styles/soundItem.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import '../styles/soundItem.css';
 
 const SoundItem = ({ 
   sound, 

@@ -2,7 +2,23 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  timeout: 10000,
 });
+
+// Response interceptor
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response) {
+      console.error('API Error:', {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers
+      });
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Auth functions
 export const login = async (credentials) => {
@@ -15,11 +31,12 @@ export const login = async (credentials) => {
         user: {
           email: response.data.email,
           role: response.data.role,
-          userId: response.data.userId
+          userId: response.data.userId,
+          username: response.data.username
         }
       };
     }
-    throw new Error(response.data?.error || 'Invalid response from server');
+    throw new Error(response.data?.error || 'Invalid response');
   } catch (error) {
     return {
       success: false,
@@ -29,14 +46,45 @@ export const login = async (credentials) => {
 };
 
 export const register = async (userData) => {
-  const response = await api.post('/auth/register', userData);
-  return response.data;
+  try {
+    const response = await api.post('/auth/register', userData);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Registration failed'
+    };
+  }
 };
 
 // Sound functions
 export const getSounds = async () => {
-  const response = await api.get('/sounds');
-  return response.data?.data || []; // Ensure we always return an array
+  try {
+    const response = await api.get('/sounds');
+    
+    // Убедимся, что возвращаем единообразный формат
+    if (response.data && (Array.isArray(response.data) || response.data.data)) {
+      return {
+        success: true,
+        data: Array.isArray(response.data) ? response.data : response.data.data
+      };
+    }
+    
+    return {
+      success: true,
+      data: [] // Возвращаем пустой массив, если данные не получены
+    };
+  } catch (error) {
+    console.error('Database error:', error);
+    return {
+      success: false,
+      error: 'Failed to fetch sounds from database',
+      data: [] // Всегда возвращаем массив
+    };
+  }
 };
 
 export const uploadSound = async (formData) => {
@@ -60,33 +108,100 @@ export const uploadSound = async (formData) => {
 
 // Collection functions
 export const getCollections = async () => {
-  const response = await api.get('/collections');
-  return response.data?.data || [];
+  try {
+    const response = await api.get('/collections');
+    return {
+      success: true,
+      data: Array.isArray(response.data) ? response.data : response.data?.data || []
+    };
+  } catch (error) {
+    console.error('API Error in getCollections:', error);
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Failed to fetch collections'
+    };
+  }
 };
 
-export const createCollection = async (collectionData) => {
-  const response = await api.post('/collections', collectionData);
-  return response.data;
+export const createCollection = async (name) => {
+  try {
+    const response = await api.post('/collections', { name });
+    return {
+      success: true,
+      data: response.data.data || response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Failed to create collection'
+    };
+  }
 };
 
-export const deleteCollection = async (collectionId) => {
-  const response = await api.delete(`/collections/${collectionId}`);
-  return response.data;
+export const deleteCollection = async (id) => {
+  try {
+    await api.delete(`/collections/${id}`);
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Failed to delete collection'
+    };
+  }
 };
 
 export const getSoundsInCollection = async (collectionId) => {
-  const response = await api.get(`/collections/${collectionId}/sounds`);
-  return response.data?.data || [];
+  try {
+    const response = await api.get(`/collections/${collectionId}/sounds`);
+    
+    // Улучшенная проверка ответа
+    if (response.status !== 200) {
+      throw new Error(`Server returned status ${response.status}`);
+    }
+    
+    return {
+      success: true,
+      data: Array.isArray(response.data) ? response.data : response.data?.data || []
+    };
+  } catch (error) {
+    console.error('API Error in getSoundsInCollection:', error);
+    return {
+      success: false,
+      error: error.response?.data?.error || 
+            'You do not have access to this collection',
+      status: error.response?.status
+    };
+  }
 };
 
 export const addSoundToCollection = async (collectionId, soundId) => {
-  const response = await api.post('/collections/add_sound', { collectionId, soundId });
-  return response.data;
+  try {
+    const response = await api.post('/collections/add_sound', { collectionId, soundId });
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Failed to add sound to collection'
+    };
+  }
 };
 
 export const removeSoundFromCollection = async (collectionId, soundId) => {
-  const response = await api.delete(`/collections/${collectionId}/sounds/${soundId}`);
-  return response.data;
+  try {
+    const response = await api.delete(`/collections/${collectionId}/sounds/${soundId}`);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Failed to remove sound from collection'
+    };
+  }
 };
 
 // User functions
@@ -113,11 +228,21 @@ export const getUserProfile = async () => {
 };
 
 export const updateUserNote = async (note) => {
-  const response = await api.put('/user/note', { note });
-  return response.data;
+  try {
+    const response = await api.put('/user/note', { note });
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Failed to update note'
+    };
+  }
 };
 
-// Add JWT interceptor
+// Request interceptor
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {

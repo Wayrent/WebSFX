@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { login as apiLogin, getUserProfile } from '../services/api';
+import { 
+  login as apiLogin, 
+  getUserProfile,
+  register as apiRegister 
+} from '../services/api';
 
 const AuthContext = createContext();
 
@@ -9,10 +13,12 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
+      
       if (!token) {
         setLoading(false);
         return;
@@ -20,6 +26,7 @@ export const AuthProvider = ({ children }) => {
 
       try {
         const response = await getUserProfile();
+        
         if (response.success) {
           setIsAuthenticated(true);
           setUser({
@@ -43,7 +50,9 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
+      setError(null);
       const result = await apiLogin(credentials);
+      
       if (!result.success) {
         throw new Error(result.error || 'Login failed');
       }
@@ -65,6 +74,24 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
+      setError(error.message);
+      return { success: false, error: error.message };
+    }
+  };
+
+  const register = async (userData) => {
+    try {
+      setError(null);
+      const result = await apiRegister(userData);
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Registration failed');
+      }
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError(error.message);
       return { success: false, error: error.message };
     }
   };
@@ -73,15 +100,18 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     setUser(null);
+    setError(null);
   };
 
   return (
     <AuthContext.Provider value={{ 
       isAuthenticated, 
       user,
+      loading,
+      error,
       login, 
       logout,
-      loading,
+      register,
       isAdmin: user?.isAdmin
     }}>
       {children}
