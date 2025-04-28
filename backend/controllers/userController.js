@@ -8,7 +8,7 @@ const getUserData = async (req, res) => {
   }
   try {
     const result = await query(
-      'SELECT email, note, subscription_status, downloads_today, role FROM users WHERE id = $1',
+      'SELECT id, email, username, note, subscription_status, downloads_today, role FROM users WHERE id = $1',
       [userId]
     );
     if (result.rows.length === 0) {
@@ -42,5 +42,5 @@ const updateUserNote = async (req, res) => {
 
 module.exports = {
   getUserData,
-  updateUserNote,
+  updateUserNote
 };

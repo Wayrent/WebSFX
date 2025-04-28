@@ -1,23 +1,36 @@
-// soundRoutes.js
 const express = require('express');
 const router = express.Router();
 const soundController = require('../controllers/soundController');
 const authMiddleware = require('../middleware/authMiddleware');
-const { upload } = require('../controllers/soundController'); // Импортируем multer
+const adminMiddleware = require('../middleware/adminMiddleware');
 
-// Получение списка звуков
-router.get('/', soundController.getSounds);
+router.get('/', async (req, res, next) => {
+  try {
+    const result = await soundController.getSounds();
+    if (!result.success) {
+      return res.status(500).json(result);
+    }
+    res.status(200).json({
+      success: true,
+      data: result.data
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
-// Получение коллекций для звука
-router.get('/:soundId/collections', authMiddleware, soundController.getSoundCollections);
-
-// Добавление звука в коллекцию
-router.post('/:collectionId/sounds', authMiddleware, soundController.addSoundToCollection);
-
-// Удаление звука из коллекции
-router.delete('/:collectionId/sounds/:soundId', authMiddleware, soundController.removeSoundFromCollection);
-
-// Загрузка звука
-router.post('/upload', authMiddleware, upload.single('file'), soundController.uploadSound);
+router.post('/upload',
+  authMiddleware,
+  adminMiddleware,
+  soundController.upload.single('file'),
+  async (req, res, next) => {
+    try {
+      const result = await soundController.uploadSound(req);
+      res.status(201).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 module.exports = router;

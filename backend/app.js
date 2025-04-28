@@ -1,43 +1,39 @@
-// app.js
-require('dotenv').config(); // Убедитесь, что эта строка есть в начале файла
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const soundRoutes = require('./routes/soundRoutes');
-const authRoutes = require('./routes/authRoutes');
-const collectionRoutes = require('./routes/collectionRoutes');
-const userRoutes = require('./routes/userRoutes');
-const authMiddleware = require('./middleware/authMiddleware');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware для CORS
-app.use(cors({ origin: 'http://localhost:3000' }));
+// CORS configuration
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 
-// Middleware для парсинга JSON
+// Middleware
 app.use(bodyParser.json());
+// Добавим после других middleware
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
-// Обслуживание статических файлов из папки uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Routes
+app.use('/api/sounds', require('./routes/soundRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/collections', require('./middleware/authMiddleware'), require('./routes/collectionRoutes'));
+app.use('/api/user', require('./middleware/authMiddleware'), require('./routes/userRoutes'));
 
-// Подключение маршрутов
-app.use('/api/sounds', soundRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/collections', authMiddleware, collectionRoutes);
-app.use('/api/user', authMiddleware, userRoutes);
-
-// Централизованная обработка ошибок
+// Central error handler
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({
+    success: false,
+    error: err.message
+  });
 });
 
-console.log('JWT_SECRET:', process.env.JWT_SECRET); // Логирование секрета
-console.log('PORT:', process.env.PORT); // Логирование порта
-
-// Запуск сервера
+// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -1,84 +1,105 @@
-// Home.js
 import React, { useState, useEffect } from 'react';
-import api from '../services/api'; // Используем централизованный API
+import { getSounds } from '../services/api';
 import SoundItem from '../components/SoundItem';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Используем контекст аутентификации
+import { useAuth } from '../contexts/AuthContext';
+import '../styles/global.css';
 
 const Home = () => {
-  const [sounds, setSounds] = useState([]); // Состояние для хранения звуков
-  const [collections, setCollections] = useState([]); // Состояние для хранения коллекций
-  const navigate = useNavigate(); // Для навигации
-  const { isAuthenticated } = useAuth(); // Используем контекст для проверки аутентификации
+  const [sounds, setSounds] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { isAuthenticated } = useAuth();
 
-  // Загрузка звуков при монтировании компонента
+  // Функция для обновления списка звуков
+  const refreshSounds = async () => {
+    try {
+      setLoading(true);
+      const soundsData = await getSounds();
+      if (Array.isArray(soundsData)) {
+        setSounds(soundsData);
+      } else {
+        setSounds([]);
+        console.error('Expected array but got:', soundsData);
+      }
+    } catch (err) {
+      console.error('Error refreshing sounds:', err);
+      setError('Failed to refresh sounds');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Обработчик добавления звука в коллекцию
+  const handleCollectionAdd = async (collectionId, soundId) => {
+    try {
+      console.log(`Adding sound ${soundId} to collection ${collectionId}`);
+      // Здесь будет логика добавления в коллекцию через API
+    } catch (err) {
+      console.error('Error adding to collection:', err);
+    }
+  };
+
+  // Загрузка данных при монтировании компонента
   useEffect(() => {
-    const fetchSounds = async () => {
+    const loadData = async () => {
       try {
-        const response = await api.getSounds(); // Вызываем метод getSounds
-        setSounds(response.data);
-      } catch (error) {
-        if (error.response && error.response.status === 404) {
-          console.error('No sounds found:', error.response.data.error);
-        } else {
-          console.error('Ошибка при загрузке звуков:', error);
+        setError('');
+        
+        // Загружаем звуки
+        await refreshSounds();
+        
+        // Загружаем коллекции для авторизованных пользователей
+        if (isAuthenticated) {
+          // TODO: Реализовать загрузку коллекций
+          setCollections([]);
         }
+      } catch (err) {
+        console.error('Error loading data:', err);
+        setError(err.message || 'Failed to load data');
       }
     };
 
-    // Загрузка коллекций пользователя при монтировании компонента
-    const fetchCollections = async () => {
-      if (!isAuthenticated) return; // Если пользователь не авторизован, не загружаем коллекции
-      try {
-        const response = await api.get('/collections'); // Получаем коллекции через API
-        setCollections(response.data);
-      } catch (error) {
-        console.error('Ошибка при загрузке коллекций:', error);
-      }
-    };
-
-    fetchSounds();
-    fetchCollections();
+    loadData();
   }, [isAuthenticated]);
+
+  // Эффект для подписки на обновления (если используется WebSocket или аналоги)
+  useEffect(() => {
+    // Можно добавить подписку на обновления списка звуков
+    return () => {
+      // Отписка при размонтировании
+    };
+  }, []);
+
+  if (loading) return <div className="loading">Loading sounds...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="home-container">
-      <h2>Список звуков</h2>
-      {sounds.length === 0 ? (
-        <p>Звуки не найдены</p>
-      ) : (
-        <ul className="sound-list">
-          {sounds.map((sound) => (
+      <h1>Sound Library</h1>
+      <div className="sound-grid">
+        {sounds.length > 0 ? (
+          sounds.map(sound => (
             <SoundItem
               key={sound.id}
               sound={sound}
-              collections={collections} // Передаем список коллекций
-              onCollectionAdd={(collectionId, soundId) => handleCollectionChange(collectionId, soundId)} // Передаем callback
-              isAuthenticated={isAuthenticated} // Передаем состояние аутентификации
+              isAuthenticated={isAuthenticated}
+              collections={collections}
+              onCollectionAdd={handleCollectionAdd}
+              onSoundUploaded={refreshSounds} // Передаём функцию обновления
             />
-          ))}
-        </ul>
-      )}
+          ))
+        ) : (
+          <div className="no-sounds-message">
+            <p>No sounds available yet.</p>
+            {isAuthenticated && (
+              <p>You can upload new sounds using the Upload button in the header.</p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-// Callback для обновления состояния коллекций
-const handleCollectionChange = async (collectionId, soundId) => {
-  try {
-    const result = await api.get(`/sounds/${soundId}/collections`);
-    const selectedCollections = result.data;
-
-    if (selectedCollections.includes(collectionId)) {
-      await api.removeSoundFromCollection(collectionId, soundId);
-      console.log(`Звук ${soundId} удален из коллекции ${collectionId}`);
-    } else {
-      await api.addSoundToCollection(collectionId, soundId);
-      console.log(`Звук ${soundId} добавлен в коллекцию ${collectionId}`);
-    }
-  } catch (error) {
-    console.error('Ошибка при обновлении коллекции:', error);
-  }
 };
 
 export default Home;

@@ -1,126 +1,129 @@
-// // api.js
-// import axios from 'axios';
-
-// const api = axios.create({
-//   baseURL: 'http://localhost:5000/api',
-// });
-
-// // Автоматическое добавление токена в заголовки
-// api.interceptors.request.use((config) => {
-//   const token = localStorage.getItem('token');
-//   console.log('Token from localStorage:', token); // Отладочное сообщение
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
-
-// // Глобальная обработка ошибок
-// api.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     if (error.response && error.response.status === 401) {
-//       console.error('Unauthorized access or expired token');
-//       window.location.href = '/login';
-//     } else if (error.response && error.response.status === 404) {
-//       console.error('Resource not found:', error.response.data.error);
-//     } else if (error.response && error.response.status === 400) {
-//       console.error('Bad request:', error.response.data.error);
-//     } else if (!error.response) {
-//       console.error('Network error:', error.message);
-//     }
-//     return Promise.reject(error);
-//   }
-// );
-
-// // Методы API
-// api.getSounds = () => api.get('/sounds');
-// api.getSoundCollections = (soundId) => api.get(`/sounds/${soundId}/collections`);
-// api.addSoundToCollection = (collectionId, soundId) =>
-//   api.post(`/collections/${collectionId}/sounds`, { sound_id: soundId });
-// api.removeSoundFromCollection = (collectionId, soundId) =>
-//   api.delete(`/collections/${collectionId}/sounds/${soundId}`);
-
-// api.uploadSound = (data) => {
-//   const formData = new FormData();
-//   Object.keys(data).forEach(key => {
-//     formData.append(key, data[key]);
-//   });
-
-//   return api.post('/sounds/upload', formData, {
-//     headers: {
-//       'Content-Type': 'multipart/form-data'
-//     }
-//   });
-// };
-
-// api.uploadSound = (data) => {
-//   const formData = new FormData();
-//   Object.keys(data).forEach((key) => {
-//     formData.append(key, data[key]);
-//   });
-
-//   return api.post('/sounds/upload', formData, {
-//     headers: { 'Content-Type': 'multipart/form-data' },
-//   });
-// };
-
-// export default api;
-
-
-// api.js
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
 });
 
-// Автоматическое добавление токена в заголовки
+// Auth functions
+export const login = async (credentials) => {
+  try {
+    const response = await api.post('/auth/login', credentials);
+    if (response.data?.token) {
+      return {
+        success: true,
+        token: response.data.token,
+        user: {
+          email: response.data.email,
+          role: response.data.role,
+          userId: response.data.userId
+        }
+      };
+    }
+    throw new Error(response.data?.error || 'Invalid response from server');
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || error.message || 'Login failed'
+    };
+  }
+};
+
+export const register = async (userData) => {
+  const response = await api.post('/auth/register', userData);
+  return response.data;
+};
+
+// Sound functions
+export const getSounds = async () => {
+  const response = await api.get('/sounds');
+  return response.data?.data || []; // Ensure we always return an array
+};
+
+export const uploadSound = async (formData) => {
+  try {
+    const response = await api.post('/sounds/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Upload failed'
+    };
+  }
+};
+
+// Collection functions
+export const getCollections = async () => {
+  const response = await api.get('/collections');
+  return response.data?.data || [];
+};
+
+export const createCollection = async (collectionData) => {
+  const response = await api.post('/collections', collectionData);
+  return response.data;
+};
+
+export const deleteCollection = async (collectionId) => {
+  const response = await api.delete(`/collections/${collectionId}`);
+  return response.data;
+};
+
+export const getSoundsInCollection = async (collectionId) => {
+  const response = await api.get(`/collections/${collectionId}/sounds`);
+  return response.data?.data || [];
+};
+
+export const addSoundToCollection = async (collectionId, soundId) => {
+  const response = await api.post('/collections/add_sound', { collectionId, soundId });
+  return response.data;
+};
+
+export const removeSoundFromCollection = async (collectionId, soundId) => {
+  const response = await api.delete(`/collections/${collectionId}/sounds/${soundId}`);
+  return response.data;
+};
+
+// User functions
+export const getUserProfile = async () => {
+  try {
+    const response = await api.get('/user/profile');
+    return {
+      success: true,
+      data: {
+        id: response.data.id,
+        email: response.data.email,
+        username: response.data.username,
+        role: response.data.role,
+        note: response.data.note,
+        subscription_status: response.data.subscription_status
+      }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Failed to fetch profile'
+    };
+  }
+};
+
+export const updateUserNote = async (note) => {
+  const response = await api.put('/user/note', { note });
+  return response.data;
+};
+
+// Add JWT interceptor
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  console.log('Token from localStorage:', token); // Логирование токена
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
-
-// Глобальная обработка ошибок
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      console.error('Unauthorized access or expired token');
-      window.location.href = '/login';
-    } else if (error.response && error.response.status === 404) {
-      console.error('Resource not found:', error.response.data.error);
-    } else if (error.response && error.response.status === 400) {
-      console.error('Bad request:', error.response.data.error);
-    } else if (!error.response) {
-      console.error('Network error:', error.message);
-    }
-    return Promise.reject(error);
-  }
-);
-
-// Методы API
-api.getSounds = () => api.get('/sounds');
-api.getSoundCollections = (soundId) => api.get(`/sounds/${soundId}/collections`);
-api.addSoundToCollection = (collectionId, soundId) =>
-  api.post(`/collections/${collectionId}/sounds`, { sound_id: soundId });
-api.removeSoundFromCollection = (collectionId, soundId) =>
-  api.delete(`/collections/${collectionId}/sounds/${soundId}`);
-
-// Загрузка звука
-api.uploadSound = (data) => {
-  const formData = new FormData();
-  Object.keys(data).forEach((key) => {
-    formData.append(key, data[key]);
-  });
-
-  return api.post('/sounds/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-};
 
 export default api;

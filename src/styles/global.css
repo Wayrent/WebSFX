@@ -53,3 +53,81 @@ body {
   box-sizing: border-box;
   margin-top: auto;
 }
+
+/* Стили для Home.js */
+.home-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sound-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.error-message {
+  color: #dc3545;
+  padding: 15px;
+  margin: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  background-color: #f8d7da;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+}
+
+/* Добавляем в global.css */
+.home-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sound-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error-message {
+  color: #dc3545;
+  padding: 20px;
+  margin: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  background-color: #f8d7da;
+  text-align: center;
+}
+
+.no-sounds-message {
+  text-align: center;
+  grid-column: 1 / -1;
+  padding: 40px;
+  color: #666;
+}
+
+.no-sounds-message p {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .sound-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}

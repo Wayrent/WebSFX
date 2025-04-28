@@ -1,18 +1,14 @@
-// Header.js
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Используем контекст аутентификации
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/header.css';
 
 const Header = () => {
-  const { isAuthenticated, user, logout } = useAuth(); // Получаем данные из контекста
+  const { isAuthenticated, user, logout, isAdmin } = useAuth();
 
   const handleLogout = () => {
-    logout(); // Вызываем метод logout из контекста
+    logout();
   };
-
-  console.log('User data:', user); // Отладочное сообщение
-  console.log('Is admin:', user?.role === 'admin'); // Безопасная проверка роли
 
   return (
     <header className="header">
@@ -26,17 +22,14 @@ const Header = () => {
       <div className="button-group">
         {isAuthenticated ? (
           <>
-            {/* Показываем "Мой профиль" */}
             <Link to="/profile" className="button profile-button">
               Мой профиль
             </Link>
-            {/* Показываем кнопку загрузки звуков только для администраторов */}
-            {user?.role === 'admin' && (
+            {isAdmin && (
               <Link to="/upload" className="button upload-button">
                 Загрузить звук
               </Link>
             )}
-            {/* Кнопка выхода */}
             <button onClick={handleLogout} className="button logout-button">
               Выйти
             </button>

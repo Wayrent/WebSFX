@@ -4,7 +4,7 @@ const { query } = require('../models/userModel');
 
 // Регистрация пользователя
 const registerUser = async (req, res) => {
-  const { username, email, password, role = 'user' } = req.body; // Устанавливаем роль по умолчанию
+  const { username, email, password, role = 'user' } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await query(
@@ -13,7 +13,7 @@ const registerUser = async (req, res) => {
     );
     const user = result.rows[0];
     const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(201).json({ token });
+    res.status(201).json({ token, role: user.role }); // Добавлено возвращение роли
   } catch (error) {
     if (error.constraint === 'users_email_key') {
       return res.status(400).json({ error: 'Email already registered' });
@@ -24,27 +24,46 @@ const registerUser = async (req, res) => {
 };
 
 // Авторизация пользователя
-// authController.js
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
-    console.log('Attempting to log in user with email:', email); // Логирование
     const result = await query('SELECT * FROM users WHERE email = $1', [email]);
     if (result.rowCount === 0) {
-      return res.status(400).json({ error: 'User not found' });
+      return res.status(401).json({ 
+        success: false,
+        error: 'Invalid email or password' 
+      });
     }
+
     const user = result.rows[0];
-    console.log('User found:', user); // Логирование
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ error: 'Invalid password' });
+      return res.status(401).json({ 
+        success: false,
+        error: 'Invalid email or password' 
+      });
     }
-    const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '1h' });
-    console.log('Token generated:', token); // Логирование
-    res.status(200).json({ token, role: user.role }); // Возвращаем токен и роль
+
+    const token = jwt.sign(
+      { userId: user.id, role: user.role }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({
+      success: true,
+      token,
+      role: user.role,
+      email: user.email,
+      userId: user.id,
+      username: user.username
+    });
   } catch (error) {
-    console.error('Error logging in user:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Login error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error' 
+    });
   }
 };
 

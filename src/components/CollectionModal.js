@@ -1,50 +1,52 @@
-// CollectionModal.js
 import React, { useState, useEffect } from 'react';
-import api from '../services/api';
+import { 
+  getSoundsInCollection as apiGetSoundCollections,
+  addSoundToCollection as apiAddSoundToCollection,
+  removeSoundFromCollection as apiRemoveSoundFromCollection
+} from '../services/api';
 
 const CollectionModal = ({ soundId, collections, onClose, onToggleSoundInCollection }) => {
   const [selectedCollections, setSelectedCollections] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Загрузка текущих коллекций, в которые добавлен звук
   useEffect(() => {
     const fetchSelectedCollections = async () => {
       try {
-        const response = await api.getSoundCollections(soundId);
-        setSelectedCollections(response.data);
+        const response = await apiGetSoundCollections(soundId);
+        setSelectedCollections(response.map(c => c.id));
       } catch (error) {
-        console.error('Ошибка при загрузке выбранных коллекций:', error);
+        console.error('Error loading collections:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchSelectedCollections();
   }, [soundId]);
 
-  // Обработчик изменения чекбокса
   const handleCheckboxChange = async (collectionId) => {
     try {
       if (selectedCollections.includes(collectionId)) {
-        // Если чекбокс уже отмечен, удаляем звук из коллекции
-        await api.removeSoundFromCollection(collectionId, soundId);
-        setSelectedCollections((prev) => prev.filter((id) => id !== collectionId));
+        await apiRemoveSoundFromCollection(collectionId, soundId);
+        setSelectedCollections(prev => prev.filter(id => id !== collectionId));
       } else {
-        // Если чекбокс не отмечен, добавляем звук в коллекцию
-        await api.addSoundToCollection(collectionId, soundId);
-        setSelectedCollections((prev) => [...prev, collectionId]);
+        await apiAddSoundToCollection(collectionId, soundId);
+        setSelectedCollections(prev => [...prev, collectionId]);
       }
-
-      // Вызываем callback для обновления состояния родительского компонента
       onToggleSoundInCollection(collectionId, soundId);
     } catch (error) {
-      console.error('Ошибка при обновлении коллекции:', error);
+      console.error('Error updating collection:', error);
     }
   };
+
+  if (loading) return <div>Loading collections...</div>;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h3>Выберите коллекции</h3>
+        <h3>Select Collections</h3>
         <ul className="collection-list">
-          {collections.map((collection) => (
+          {collections.map(collection => (
             <li key={collection.id} className="collection-item">
               <label>
                 <input
@@ -58,7 +60,7 @@ const CollectionModal = ({ soundId, collections, onClose, onToggleSoundInCollect
           ))}
         </ul>
         <button onClick={onClose} className="modal-close-button">
-          Закрыть
+          Close
         </button>
       </div>
     </div>

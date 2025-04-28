@@ -39,8 +39,12 @@ const App = () => {
 
 // Приватный маршрут
 const PrivateRoute = ({ element: Element, ...rest }) => {
-  const { isAuthenticated } = useAuth(); // Используем контекст
-  console.log('PrivateRoute isAuthenticated:', isAuthenticated); // Логирование состояния
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return isAuthenticated ? <Element {...rest} /> : <Navigate to="/login" />;
 };
 

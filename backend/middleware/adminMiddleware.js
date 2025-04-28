@@ -13,8 +13,10 @@ const adminMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { userId: decoded.userId, role: decoded.role }; // Добавляем роль
-    console.log('Authenticated user:', req.user);
+    if (decoded.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied, admin rights required' });
+    }
+    req.user = decoded;
     next();
   } catch (error) {
     console.error('Invalid token:', error.message);

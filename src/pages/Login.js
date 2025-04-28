@@ -1,49 +1,41 @@
-// Login.js
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Используем контекст аутентификации
+import { useAuth } from '../contexts/AuthContext';
 import '../pages/auth.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const navigate = useNavigate(); // Используем useNavigate здесь
-  const { login } = useAuth(); // Используем метод login из контекста
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccessMessage('');
+    setLoading(true);
+
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-      const token = response.data.token;
-
-      // Вызываем метод login из контекста с данными пользователя
-      login({ token, email });
-
-      setSuccessMessage('Успешный вход!');
-      setTimeout(() => {
-        setSuccessMessage('');
-        navigate('/profile'); // Перенаправляем на страницу профиля
-      }, 1000);
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.error) {
-        setError(error.response.data.error);
+      const result = await login({ email, password });
+      
+      if (result.success) {
+        navigate('/profile');
       } else {
-        setError('Произошла ошибка при входе. Попробуйте позже.');
+        throw new Error(result.error || 'Login failed');
       }
-      console.error('Ошибка при входе:', error);
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.message || 'Invalid email or password');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h2>Войти</h2>
-        {successMessage && <p className="success-message">{successMessage}</p>}
+        <h2>Login</h2>
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
           <label>
@@ -56,7 +48,7 @@ const Login = () => {
             />
           </label>
           <label>
-            Пароль:
+            Password:
             <input
               type="password"
               value={password}
@@ -64,7 +56,9 @@ const Login = () => {
               required
             />
           </label>
-          <button type="submit">Войти</button>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
         </form>
       </div>
     </div>

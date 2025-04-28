@@ -1,83 +1,151 @@
-// Upload.js
 import React, { useState } from 'react';
-import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import { uploadSound } from '../services/api';
 import '../styles/upload.css';
 
 const Upload = () => {
-  const [file, setFile] = useState(null);
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('');
-  const [tags, setTags] = useState('');
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [formData, setFormData] = useState({
+    title: '',
+    category: '',
+    tags: '',
+    bitrate: '192 kbps',
+    quality: 'high',
+    duration: '',
+    file: null
+  });
+  const [status, setStatus] = useState({ loading: false, error: '', success: false });
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccessMessage('');
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('title', title);
-      formData.append('category', category);
-      formData.append('tags', tags);
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-      await api.uploadSound(formData);
-      setSuccessMessage('Звук успешно загружен!');
-      setTimeout(() => {
-        setSuccessMessage('');
-        navigate('/');
-      }, 2000);
-    } catch (error) {
-      setError('Произошла ошибка при загрузке звука.');
-      console.error('Ошибка при загрузке звука:', error);
+  const handleFileChange = e => {
+    setFormData(prev => ({ ...prev, file: e.target.files[0] }));
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setStatus({ loading: true, error: '', success: false });
+
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        data.append(key, value);
+      }
+    });
+
+    try {
+      const result = await uploadSound(data);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      setStatus({ loading: false, error: '', success: true });
+      setTimeout(() => navigate('/'), 2000);
+    } catch (err) {
+      console.error('Upload error:', err);
+      setStatus({
+        loading: false,
+        error: err.message || 'Upload failed',
+        success: false
+      });
     }
   };
 
   return (
     <div className="upload-container">
-      <h2>Загрузить звук</h2>
-      {successMessage && <p className="success-message">{successMessage}</p>}
-      {error && <p className="error-message">{error}</p>}
+      <h2>Upload Sound</h2>
+      {status.error && <div className="error">{status.error}</div>}
+      {status.success && <div className="success">Sound uploaded successfully!</div>}
+      
       <form onSubmit={handleSubmit}>
         <label>
-          Файл:
+          Sound File (MP3/WAV):
           <input
             type="file"
-            onChange={(e) => setFile(e.target.files[0])}
+            name="file"
+            accept=".mp3,.wav,audio/*"
+            onChange={handleFileChange}
             required
           />
         </label>
+        
         <label>
-          Название:
+          Title:
           <input
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
             required
           />
         </label>
+        
         <label>
-          Категория:
+          Category:
           <input
             type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
             required
           />
         </label>
+        
         <label>
-          Теги (через запятую):
+          Tags (comma separated):
           <input
             type="text"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
+            name="tags"
+            value={formData.tags}
+            onChange={handleChange}
+          />
+        </label>
+
+        <label>
+          Bitrate:
+          <select
+            name="bitrate"
+            value={formData.bitrate}
+            onChange={handleChange}
+          >
+            <option value="128 kbps">128 kbps</option>
+            <option value="192 kbps">192 kbps</option>
+            <option value="256 kbps">256 kbps</option>
+            <option value="320 kbps">320 kbps</option>
+          </select>
+        </label>
+
+        <label>
+          Quality:
+          <select
+            name="quality"
+            value={formData.quality}
+            onChange={handleChange}
+          >
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </label>
+
+        <label>
+          Duration (seconds):
+          <input
+            type="number"
+            name="duration"
+            value={formData.duration}
+            onChange={handleChange}
+            min="1"
             required
           />
         </label>
-        <button type="submit">Загрузить</button>
+        
+        <button type="submit" disabled={status.loading}>
+          {status.loading ? 'Uploading...' : 'Upload Sound'}
+        </button>
       </form>
     </div>
   );

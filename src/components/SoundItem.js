@@ -1,88 +1,62 @@
-// SoundItem.js
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import CollectionModal from './CollectionModal'; // Импортируем модальное окно
+import CollectionModal from './CollectionModal';
 import '../styles/soundItem.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
-const SoundItem = ({ sound, collections, onCollectionAdd, isAuthenticated }) => {
+const SoundItem = ({ 
+  sound, 
+  isAuthenticated = false, 
+  collections = [], 
+  onCollectionAdd = () => {} 
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleAddToCollection = () => {
+    if (!isAuthenticated) {
+      alert('Please login to add to collections');
+      return;
+    }
     setIsModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
   return (
-    <li className="list-group-item sound-item">
+    <div className="sound-item">
       <h5>{sound.title}</h5>
       <div className="sound-characteristics">
-        <div className="characteristics-row">
-          <span className="category">{sound.category}</span>
-          <span className="tags">Tags: {sound.tags}</span>
-        </div>
-        <div className="characteristics-row">
-          <span className="bitrate">Bitrate: {sound.bitrate}</span>
-          <span className="quality">Quality: {sound.quality}</span>
-          <span className="duration">Duration: {sound.duration} seconds</span>
-        </div>
+        <span className="category">{sound.category}</span>
+        <span className="tags">Tags: {sound.tags}</span>
+        <span className="bitrate">Bitrate: {sound.bitrate}</span>
+        <span className="duration">Duration: {sound.duration}s</span>
       </div>
-      <div className="audio-container">
-        <audio controls className="mb-2 mt-2">
-          <source src={sound.url} type={`audio/${sound.url.split('.').pop()}`} />
-          Your browser does not support the audio element.
-        </audio>
-      </div>
+      <audio controls src={sound.url} />
       <div className="button-group">
-        {isAuthenticated ? (
-          <button onClick={handleAddToCollection} className="btn btn-secondary">
-            В коллекцию
-          </button>
-        ) : (
-          <button
-            onClick={() => alert('Войдите, чтобы добавить звук в коллекцию!')}
-            className="btn btn-secondary"
-          >
-            В коллекцию
-          </button>
-        )}
-        <button className="btn btn-primary">
+        <button onClick={handleAddToCollection}>
+          Add to Collection
+        </button>
+        <button onClick={() => console.log('Download:', sound.id)}>
           <FontAwesomeIcon icon={faDownload} />
         </button>
       </div>
-
-      {/* Модальное окно */}
+      
       {isModalOpen && (
         <CollectionModal
           soundId={sound.id}
           collections={collections}
-          onClose={handleCloseModal}
+          onClose={() => setIsModalOpen(false)}
           onToggleSoundInCollection={onCollectionAdd}
         />
       )}
-    </li>
+    </div>
   );
 };
 
 SoundItem.propTypes = {
-  sound: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    category: PropTypes.string.isRequired,
-    tags: PropTypes.string.isRequired,
-    bitrate: PropTypes.string.isRequired,
-    quality: PropTypes.string.isRequired,
-    duration: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    url: PropTypes.string.isRequired,
-    isFavorite: PropTypes.bool,
-  }).isRequired,
-  collections: PropTypes.array.isRequired,
-  onCollectionAdd: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool.isRequired,
+  sound: PropTypes.object.isRequired,
+  isAuthenticated: PropTypes.bool,
+  collections: PropTypes.array,
+  onCollectionAdd: PropTypes.func
 };
 
 export default SoundItem;
