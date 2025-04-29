@@ -1,0 +1,52 @@
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    gap: 1rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  .loading-spinner {
+    font-size: 3rem;
+    color: #28a745;
+    animation: pulse 0.8s infinite ease-in-out;
+  }
+  
+  .loading-message {
+    font-size: 1.2rem;
+    color: #495057;
+    animation: textPulse 1s infinite; /* Уменьшено с 2s до 1s */
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+  
+  @keyframes textPulse {
+    0%, 100% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }

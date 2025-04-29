@@ -15,7 +15,7 @@ const SoundItem = ({
 
   const handleAddToCollection = () => {
     if (!isAuthenticated) {
-      alert('Please login to add to collections');
+      alert('Авторизуйтесь, чтобы создать коллекцию');
       return;
     }
     setIsModalOpen(true);

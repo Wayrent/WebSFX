@@ -1,100 +1,177 @@
-/* Стили для заголовка */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center; /* Выровняем элементы по центру по вертикали */
-  padding: 1rem;
-  background-color: #f8f9fa;
-  width: 100%;
+/* Базовые сбросы */
+.header * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Основные стили хедера */
+.header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   z-index: 1000;
-}
-
-/* Стили для логотипа */
-.header .logo {
-  text-decoration: none;
-  color: #28a745;
-  font-weight: 800;
-  font-size: 1.5rem;
-  margin-left: 1rem;
-}
-
-/* Стили для блока поиска */
-.header .search-box {
+  height: 60px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  flex-grow: 1;
 }
 
-.header .search-box input[type="text"] {
-  padding: 0.5rem;
-  border-radius: 0.25rem 0 0 0.25rem;
-  border: 1px solid #ccc;
+.header-wrapper {
+  display: flex;
+  align-items: center;
   width: 100%;
-  max-width: 700px; /* Уменьшаем ширину поля поиска на 30% */
-  margin: 0.25rem 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 100%;
 }
 
-.header .search-box .search-button {
-  padding: 0.5rem;
-  border-radius: 0 0.25rem 0.25rem 0;
-  border: 1px solid #ccc;
-  border-left: none;
-  background-color: #28a745;
-  color: white;
-  cursor: pointer;
-  margin: 0.25rem 0;
-}
-
-.header .search-box .search-button:hover {
-  background-color: #218838;
-}
-
-/* Стили для группы кнопок */
-.header .button-group {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 10px;
-  margin-right: 1rem; /* Отступ справа */
-  margin-top: -0.75rem; /* Увеличиваем отрицательный отступ сверху */
-}
-
-/* Общие стили для кнопок */
-.header .button {
-  padding: 0.5rem 1rem;
-  text-align: center;
+/* Логотип */
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #28a745;
   text-decoration: none;
-  font-size: 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  margin: 0.25rem 0; /* Отступы сверху и снизу */
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 10px;
 }
 
-/* Стили для кнопки "Мой профиль" */
-.header .profile-button {
+/* Группа поиска */
+.search-group {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  margin: 0 20px;
+  flex-grow: 1;
+  max-width: 600px;
+}
+
+.search-input {
+  height: 100%;
+  padding: 0 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.search-button {
+  height: 100%;
+  width: 50px;
   background-color: #28a745;
   color: white;
   border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
 }
 
-.header .profile-button:hover {
+.search-button:hover {
   background-color: #218838;
 }
 
-/* Стили для кнопки "Выйти" */
-.header .logout-button {
-  background-color: #6c757d; /* Серый цвет */
-  color: rgb(255, 255, 255);
-  border: none;
+/* Навигационные кнопки */
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  height: 100%;
 }
 
-.header .logout-button:hover {
-  background-color: #d66363; /* Темно-серый цвет при наведении */
-  color: rgb(255, 255, 255);
+.nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  border: none;
+  color: white;
+}
+
+.nav-btn::after {
+  content: attr(title);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+  margin-top: 5px;
+}
+
+.nav-btn:hover::after {
+  opacity: 1;
+  visibility: visible;
+  margin-top: 10px;
+}
+
+/* Цвета кнопок */
+.profile { background-color: #28a745; }
+.profile:hover { background-color: #218838; }
+
+.upload { background-color: #6f42c1; }
+.upload:hover { background-color: #5a36b2; }
+
+.logout { background-color: #dc3545; }
+.logout:hover { background-color: #c82333; }
+
+.login { background-color: #17a2b8; }
+.login:hover { background-color: #138496; }
+
+.register { background-color: #28a745; }
+.register:hover { background-color: #218838; }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .header-wrapper {
+    padding: 0 10px;
+  }
+  
+  .search-group {
+    margin: 0 10px;
+  }
+  
+  .nav-buttons {
+    gap: 8px;
+  }
+  
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 576px) {
+  .logo {
+    font-size: 1.2rem;
+  }
+  
+  .search-group {
+    margin: 0 5px;
+  }
+  
+  .search-input {
+    padding: 0 10px;
+  }
 }
