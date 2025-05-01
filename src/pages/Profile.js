@@ -16,8 +16,9 @@ import {
   createCollection,
   deleteCollection,
   updateUserNote,
-  getUserProfile // Добавляем этот импорт
+  getUserProfile
 } from '../services/api';
+import api from '../services/api';
 import '../styles/profile.css';
 
 const Profile = () => {
@@ -55,7 +56,6 @@ const Profile = () => {
       } catch (err) {
         setError(err.message);
       } finally {
-        // Имитация загрузки для демонстрации анимации
         setTimeout(() => setIsLoading(false), 1500);
       }
     };
@@ -74,6 +74,23 @@ const Profile = () => {
       }
     } catch (err) {
       setError('Failed to load collection sounds');
+    }
+  };
+
+  const handleDeleteSound = async (soundId) => {
+    try {
+      const response = await api.delete(`/sounds/${soundId}`);
+      if (response.success) {
+        setSoundsInCollection(prev => {
+          const updated = {};
+          for (const collectionId in prev) {
+            updated[collectionId] = prev[collectionId].filter(s => s.id !== soundId);
+          }
+          return updated;
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting sound:', error);
     }
   };
 
@@ -258,6 +275,8 @@ const Profile = () => {
                           <SoundItem
                             key={`${collection.id}-${sound.id}`}
                             sound={sound}
+                            isAdmin={userData?.role === 'admin'}
+                            onDelete={handleDeleteSound}
                             showActions={false}
                           />
                         ))}
@@ -275,7 +294,6 @@ const Profile = () => {
         )}
       </div>
 
-      {/* Модальное окно создания коллекции */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">

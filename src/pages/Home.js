@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getSounds, getCollections } from '../services/api';
 import SoundItem from '../components/SoundItem';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 import '../styles/global.css';
 
 const Home = () => {
@@ -9,7 +10,7 @@ const Home = () => {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const refreshSounds = async () => {
     try {
@@ -31,12 +32,18 @@ const Home = () => {
     }
   };
 
-  const handleCollectionAdd = async (collectionId, soundId) => {
+  const handleDeleteSound = async (soundId) => {
     try {
-      console.log(`Adding sound ${soundId} to collection ${collectionId}`);
-      // Здесь будет логика добавления в коллекцию через API
-    } catch (err) {
-      console.error('Error adding to collection:', err);
+      const response = await api.delete(`/sounds/${soundId}`);
+      
+      if (response.data?.success) {  // Исправлено: проверяем response.data.success
+        setSounds(prevSounds => prevSounds.filter(s => s.id !== soundId));
+      } else {
+        throw new Error(response.data?.error || 'Failed to delete sound');
+      }
+    } catch (error) {
+      console.error('Error deleting sound:', error);
+      setError(error.message || 'Failed to delete sound');
     }
   };
 
@@ -77,6 +84,7 @@ const Home = () => {
   return (
     <div className="home-container">
       <h1>Sound Library</h1>
+      {error && <div className="error-message">{error}</div>}
       <div className="sound-grid">
         {sounds.length > 0 ? (
           sounds.map(sound => (
@@ -84,14 +92,15 @@ const Home = () => {
               key={sound.id}
               sound={sound}
               isAuthenticated={isAuthenticated}
+              isAdmin={user?.isAdmin}
               collections={collections}
-              onCollectionAdd={handleCollectionAdd}
+              onDelete={handleDeleteSound}
             />
           ))
         ) : (
           <div className="no-sounds-message">
             <p>No sounds available yet.</p>
-            {isAuthenticated && (
+            {isAuthenticated && user?.isAdmin && (
               <p>You can upload new sounds using the Upload button in the header.</p>
             )}
           </div>

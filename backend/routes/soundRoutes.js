@@ -33,4 +33,10 @@ router.post('/upload',
   }
 );
 
+router.delete('/:id',
+  authMiddleware,
+  adminMiddleware,
+  soundController.deleteSound
+);
+
 module.exports = router;

@@ -38,17 +38,16 @@ const getSounds = async () => {
       ORDER BY id DESC
     `);
     
-    // Возвращаем единообразный формат
     return {
       success: true,
-      data: result.rows // Гарантированно массив
+      data: result.rows
     };
   } catch (error) {
     console.error('Database error:', error);
     return {
       success: false,
       error: 'Failed to fetch sounds from database',
-      data: [] // Гарантированно массив даже при ошибке
+      data: []
     };
   }
 };
@@ -79,8 +78,41 @@ const uploadSound = async (req) => {
   }
 };
 
+const deleteSound = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Получаем информацию о звуке для удаления файла
+    const soundResult = await query('SELECT url FROM sounds WHERE id = $1', [id]);
+    
+    if (soundResult.rowCount === 0) {
+      return res.status(404).json({ success: false, error: 'Sound not found' });
+    }
+    
+    const sound = soundResult.rows[0];
+    const filePath = path.join(__dirname, '../../public', sound.url);
+    
+    // Удаляем связи из коллекций
+    await query('DELETE FROM collection_sounds WHERE sound_id = $1', [id]);
+    
+    // Удаляем сам звук
+    await query('DELETE FROM sounds WHERE id = $1', [id]);
+    
+    // Удаляем файл
+    fs.unlink(filePath, (err) => {
+      if (err) console.error('Error deleting file:', err);
+    });
+    
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error deleting sound:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete sound' });
+  }
+};
+
 module.exports = {
   upload,
   getSounds,
-  uploadSound
+  uploadSound,
+  deleteSound
 };

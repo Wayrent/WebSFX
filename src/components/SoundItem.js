@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import CollectionModal from './CollectionModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../styles/soundItem.css';
 
 const SoundItem = ({ 
   sound, 
   isAuthenticated = false, 
+  isAdmin = false,
   collections = [], 
-  onCollectionAdd = () => {} 
+  onCollectionAdd = () => {},
+  onDelete = () => {}
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -21,8 +23,20 @@ const SoundItem = ({
     setIsModalOpen(true);
   };
 
+  const handleDeleteClick = () => {
+    if (window.confirm(`Вы уверены, что хотите удалить звук "${sound.title}"?`)) {
+      onDelete(sound.id);
+    }
+  };
+
   return (
     <div className="sound-item">
+      {isAdmin && (
+        <button className="sound-delete-btn" onClick={handleDeleteClick}>
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+      )}
+      
       <div className="sound-header">
         <h5>{sound.title}</h5>
         <div className="sound-characteristics">
@@ -68,8 +82,10 @@ const SoundItem = ({
 SoundItem.propTypes = {
   sound: PropTypes.object.isRequired,
   isAuthenticated: PropTypes.bool,
+  isAdmin: PropTypes.bool,
   collections: PropTypes.array,
-  onCollectionAdd: PropTypes.func
+  onCollectionAdd: PropTypes.func,
+  onDelete: PropTypes.func
 };
 
 export default SoundItem;
