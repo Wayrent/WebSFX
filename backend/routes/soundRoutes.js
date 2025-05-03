@@ -19,6 +19,24 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+router.get('/search', async (req, res) => {
+  try {
+    const filters = {
+      searchTerm: req.query.q,
+      category: req.query.category,
+      bitrate: req.query.bitrate,
+      quality: req.query.quality,
+      sortBy: req.query.sortBy,
+      sortOrder: req.query.sortOrder
+    };
+    
+    const result = await soundController.searchSounds(filters);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 router.post('/upload',
   authMiddleware,
   adminMiddleware,

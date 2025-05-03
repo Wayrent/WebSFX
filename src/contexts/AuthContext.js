@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   login as apiLogin, 
   getUserProfile,
-  register as apiRegister 
+  register as apiRegister,
+  searchSounds as apiSearchSounds
 } from '../services/api';
 
 const AuthContext = createContext();
@@ -14,6 +15,19 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Добавляем функцию для поиска
+  const searchSounds = async (filters) => {
+    try {
+      return await apiSearchSounds(filters);
+    } catch (error) {
+      console.error('Search error:', error);
+      return {
+        success: false,
+        error: 'Search failed'
+      };
+    }
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -112,7 +126,8 @@ export const AuthProvider = ({ children }) => {
       login, 
       logout,
       register,
-      isAdmin: user?.isAdmin
+      isAdmin: user?.isAdmin,
+      searchSounds // Добавляем функцию поиска в контекст
     }}>
       {children}
     </AuthContext.Provider>

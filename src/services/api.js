@@ -65,7 +65,6 @@ export const getSounds = async () => {
   try {
     const response = await api.get('/sounds');
     
-    // Убедимся, что возвращаем единообразный формат
     if (response.data && (Array.isArray(response.data) || response.data.data)) {
       return {
         success: true,
@@ -75,14 +74,29 @@ export const getSounds = async () => {
     
     return {
       success: true,
-      data: [] // Возвращаем пустой массив, если данные не получены
+      data: []
     };
   } catch (error) {
     console.error('Database error:', error);
     return {
       success: false,
       error: 'Failed to fetch sounds from database',
-      data: [] // Всегда возвращаем массив
+      data: []
+    };
+  }
+};
+
+export const searchSounds = async (filters) => {
+  try {
+    const response = await api.get('/sounds/search', { params: filters });
+    return {
+      success: true,
+      data: response.data.data || []
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Search failed'
     };
   }
 };
@@ -154,7 +168,6 @@ export const getSoundsInCollection = async (collectionId) => {
   try {
     const response = await api.get(`/collections/${collectionId}/sounds`);
     
-    // Улучшенная проверка ответа
     if (response.status !== 200) {
       throw new Error(`Server returned status ${response.status}`);
     }
@@ -167,8 +180,7 @@ export const getSoundsInCollection = async (collectionId) => {
     console.error('API Error in getSoundsInCollection:', error);
     return {
       success: false,
-      error: error.response?.data?.error || 
-            'You do not have access to this collection',
+      error: error.response?.data?.error || 'You do not have access to this collection',
       status: error.response?.status
     };
   }

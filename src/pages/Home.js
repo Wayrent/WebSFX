@@ -1,31 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { getSounds, getCollections } from '../services/api';
+import { getSounds, getCollections, searchSounds } from '../services/api';
 import SoundItem from '../components/SoundItem';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import '../styles/global.css';
+import { useLocation } from 'react-router-dom';
 
-const Home = () => {
+const Home = ({ searchFilters = {} }) => {
   const [sounds, setSounds] = useState([]);
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { isAuthenticated, user } = useAuth();
+  const location = useLocation();
 
-  const refreshSounds = async () => {
+  // Добавляем обработку состояния из навигации
+  useEffect(() => {
+    if (location.state?.searchParams) {
+      loadSounds(location.state.searchParams);
+    } else {
+      loadSounds(searchFilters);
+    }
+  }, [searchFilters, location.state]);
+
+  const loadSounds = async (filters = {}) => {
     try {
       setLoading(true);
-      const soundsResponse = await getSounds();
+      setError('');
       
-      if (soundsResponse.success) {
-        setSounds(soundsResponse.data || []);
+      let result;
+      const hasSearchQuery = filters.q && filters.q.trim() !== '';
+      const hasActiveFilters = Object.keys(filters).some(
+        key => key !== 'q' && filters[key] !== ''
+      );
+
+      if (hasSearchQuery || hasActiveFilters) {
+        console.log('Searching with filters:', filters);
+        result = await searchSounds(filters);
+      } else {
+        console.log('Loading all sounds');
+        result = await getSounds();
+      }
+      
+      if (result.success) {
+        setSounds(result.data || []);
+        if (result.data.length === 0) {
+          setError('No sounds found matching your criteria');
+        }
       } else {
         setSounds([]);
-        console.error('Error fetching sounds:', soundsResponse.error);
+        setError(result.error || 'Failed to load sounds');
       }
     } catch (err) {
-      console.error('Error refreshing sounds:', err);
-      setError('Failed to refresh sounds');
+      console.error('Error loading sounds:', err);
+      setError('Failed to load sounds');
       setSounds([]);
     } finally {
       setLoading(false);
@@ -36,7 +64,7 @@ const Home = () => {
     try {
       const response = await api.delete(`/sounds/${soundId}`);
       
-      if (response.data?.success) {  // Исправлено: проверяем response.data.success
+      if (response.data?.success) {
         setSounds(prevSounds => prevSounds.filter(s => s.id !== soundId));
       } else {
         throw new Error(response.data?.error || 'Failed to delete sound');
@@ -52,8 +80,6 @@ const Home = () => {
       const collectionsResponse = await getCollections();
       if (collectionsResponse.success) {
         setCollections(collectionsResponse.data || []);
-      } else {
-        console.error('Error loading collections:', collectionsResponse.error);
       }
     } catch (err) {
       console.error('Error loading collections:', err);
@@ -62,29 +88,45 @@ const Home = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        setError('');
-        await refreshSounds();
-        
-        if (isAuthenticated) {
-          await loadCollections();
-        }
-      } catch (err) {
-        console.error('Error loading data:', err);
-        setError(err.message || 'Failed to load data');
+      await loadSounds(searchFilters);
+      
+      if (isAuthenticated) {
+        await loadCollections();
       }
     };
 
     loadData();
-  }, [isAuthenticated]);
+  }, [searchFilters, isAuthenticated]);
 
-  if (loading) return <div className="loading">Loading sounds...</div>;
-  if (error) return <div className="error-message">{error}</div>;
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  if (loading) {
+    return (
+      <div className="loading">
+        <div className="spinner"></div>
+        <p>Loading sounds...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="home-container">
       <h1>Sound Library</h1>
-      {error && <div className="error-message">{error}</div>}
+      
+      {error && (
+        <div className="error-message">
+          {error}
+          <button onClick={() => setError('')} className="close-error">
+            &times;
+          </button>
+        </div>
+      )}
+
       <div className="sound-grid">
         {sounds.length > 0 ? (
           sounds.map(sound => (
@@ -99,9 +141,15 @@ const Home = () => {
           ))
         ) : (
           <div className="no-sounds-message">
-            <p>No sounds available yet.</p>
-            {isAuthenticated && user?.isAdmin && (
-              <p>You can upload new sounds using the Upload button in the header.</p>
+            {error ? (
+              <p>{error}</p>
+            ) : (
+              <>
+                <p>No sounds available yet.</p>
+                {isAuthenticated && user?.isAdmin && (
+                  <p>You can upload new sounds using the Upload button in the header.</p>
+                )}
+              </>
             )}
           </div>
         )}

@@ -52,6 +52,57 @@ const getSounds = async () => {
   }
 };
 
+const searchSounds = async (filters) => {
+  try {
+    let queryText = 'SELECT * FROM sounds WHERE 1=1';
+    const params = [];
+    let paramIndex = 1;
+
+    if (filters.searchTerm) {
+      queryText += ` AND (title ILIKE $${paramIndex} OR tags ILIKE $${paramIndex} OR category ILIKE $${paramIndex})`;
+      params.push(`%${filters.searchTerm}%`);
+      paramIndex++;
+    }
+
+    if (filters.category) {
+      queryText += ` AND category = $${paramIndex}`;
+      params.push(filters.category);
+      paramIndex++;
+    }
+
+    if (filters.bitrate) {
+      queryText += ` AND bitrate = $${paramIndex}`;
+      params.push(filters.bitrate);
+      paramIndex++;
+    }
+
+    if (filters.quality) {
+      queryText += ` AND quality = $${paramIndex}`;
+      params.push(filters.quality);
+      paramIndex++;
+    }
+
+    if (filters.sortBy) {
+      const sortOrder = filters.sortOrder === 'desc' ? 'DESC' : 'ASC';
+      queryText += ` ORDER BY ${filters.sortBy} ${sortOrder}`;
+    } else {
+      queryText += ' ORDER BY title ASC';
+    }
+
+    const result = await query(queryText, params);
+    return {
+      success: true,
+      data: result.rows
+    };
+  } catch (error) {
+    console.error('Search error:', error);
+    return {
+      success: false,
+      error: 'Failed to search sounds'
+    };
+  }
+};
+
 const uploadSound = async (req) => {
   try {
     if (!req.file) {
@@ -82,7 +133,6 @@ const deleteSound = async (req, res) => {
   const { id } = req.params;
   
   try {
-    // Получаем информацию о звуке для удаления файла
     const soundResult = await query('SELECT url FROM sounds WHERE id = $1', [id]);
     
     if (soundResult.rowCount === 0) {
@@ -92,13 +142,9 @@ const deleteSound = async (req, res) => {
     const sound = soundResult.rows[0];
     const filePath = path.join(__dirname, '../../public', sound.url);
     
-    // Удаляем связи из коллекций
     await query('DELETE FROM collection_sounds WHERE sound_id = $1', [id]);
-    
-    // Удаляем сам звук
     await query('DELETE FROM sounds WHERE id = $1', [id]);
     
-    // Удаляем файл
     fs.unlink(filePath, (err) => {
       if (err) console.error('Error deleting file:', err);
     });
@@ -114,5 +160,6 @@ module.exports = {
   upload,
   getSounds,
   uploadSound,
-  deleteSound
+  deleteSound,
+  searchSounds
 };
