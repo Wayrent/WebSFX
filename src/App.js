@@ -11,6 +11,7 @@ import './styles/header.css';
 import './styles/footer.css';
 import './styles/soundItem.css';
 import { AuthProvider, useAuth } from './contexts/AuthContext'; // Добавляем useAuth в импорт
+import AdminUsers from './pages/AdminUsers';
 
 const App = () => {
   const [searchFilters, setSearchFilters] = useState({});
@@ -27,6 +28,7 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/upload" element={<PrivateRoute element={Upload} />} />
+              <Route path="/admin/users" element={<AdminRoute element={AdminUsers} />} />
             </Routes>
           </div>
           <footer className="footer">
@@ -36,6 +38,17 @@ const App = () => {
       </AuthProvider>
     </Router>
   );
+};
+
+// Управление пользователями
+const AdminRoute = ({ element: Element }) => {
+  const { isAuthenticated, isAdmin, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return isAuthenticated && isAdmin ? <Element /> : <Navigate to="/" />;
 };
 
 // PrivateRoute вынесен в отдельную функцию

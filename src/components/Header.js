@@ -10,7 +10,8 @@ import {
   faSignInAlt,
   faUserPlus,
   faFilter,
-  faTimesCircle
+  faTimesCircle,
+  faUsersCog // Новая иконка для управления пользователями
 } from '@fortawesome/free-solid-svg-icons';
 import '../styles/header.css';
 import '../styles/search.css';
@@ -175,12 +176,20 @@ const Header = ({ onSearch }) => {
         </div>
 
         <div className="nav-buttons">
+         {isAdmin && (
+            <>
+              <Link to="/admin/users" className="nav-btn admin" title="Управление пользователями">
+                <FontAwesomeIcon icon={faUsersCog} />
+              </Link>
+            </>
+          )}
           {isAuthenticated ? (
             <>
               <Link to="/profile" className="nav-btn profile" title="Профиль">
                 <FontAwesomeIcon icon={faUser} />
               </Link>
               {isAdmin && (
+                
                 <Link to="/upload" className="nav-btn upload" title="Загрузить">
                   <FontAwesomeIcon icon={faUpload} />
                 </Link>

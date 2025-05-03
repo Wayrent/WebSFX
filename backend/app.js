@@ -7,24 +7,28 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS configuration
+// Middleware
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true
 }));
-
-// Middleware
 app.use(bodyParser.json());
-// Добавим после других middleware
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Routes
-app.use('/api/sounds', require('./routes/soundRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/sounds', require('./routes/soundRoutes'));
 app.use('/api/collections', require('./middleware/authMiddleware'), require('./routes/collectionRoutes'));
 app.use('/api/user', require('./middleware/authMiddleware'), require('./routes/userRoutes'));
 
-// Central error handler
+// Admin routes - ДОБАВЛЯЕМ ЭТОТ БЛОК
+app.use('/api/admin', 
+  require('./middleware/authMiddleware'),
+  require('./middleware/adminMiddleware'), 
+  require('./routes/adminRoutes') // Создадим новый файл для админских маршрутов
+);
+
+// Error handler
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
   res.status(500).json({
@@ -33,7 +37,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

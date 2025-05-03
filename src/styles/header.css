@@ -142,6 +142,10 @@
 .register { background-color: #28a745; }
 .register:hover { background-color: #218838; }
 
+/* Добавить в секцию цветов кнопок */
+.admin { background-color: #2091c6; color: #ffffff; }
+.admin:hover { background-color: #18749f; }
+
 /* Адаптивность */
 @media (max-width: 768px) {
   .header-wrapper {
