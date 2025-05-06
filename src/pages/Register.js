@@ -13,27 +13,31 @@ const Register = () => {
   const navigate = useNavigate(); // Используем useNavigate здесь
   const { login } = useAuth(); // Используем метод login из контекста
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', { username, email, password });
-      const token = response.data.token;
-
-      // Вызываем метод login из контекста с данными пользователя
-      login({ token, email });
-
-      navigate('/profile'); // Выполняем навигацию здесь
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.error) {
-        setError(error.response.data.error);
-      } else {
-        setError('Произошла ошибка при регистрации. Попробуйте позже.');
-      }
-      console.error('Ошибка при регистрации:', error);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  
+  try {
+    const response = await axios.post('http://localhost:5000/api/auth/register', { 
+      username, 
+      email, 
+      password 
+    });
+    
+    if (response.data.success) {
+      // Перенаправляем на страницу с сообщением о подтверждении email
+      navigate('/login', { 
+        state: { 
+          message: 'Registration successful! Please check your email to verify your account.' 
+        } 
+      });
+    } else {
+      throw new Error(response.data.error || 'Registration failed');
     }
-  };
+  } catch (error) {
+    setError(error.response?.data?.error || error.message || 'Registration failed');
+  }
+};
 
   return (
     <div className="auth-container">

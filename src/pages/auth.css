@@ -1,29 +1,23 @@
-/* Подключение шрифта Nunito */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
-
 .auth-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Расположим блок входа выше */
-  height: 100vh;
-  background-color: #ffffff; /* Фон страницы должен быть белым */
-  padding-top: 75px; /* Уменьшаем отступ сверху */
+  align-items: center;
+  min-height: calc(100vh - 150px);
+  padding: 20px;
 }
 
 .auth-box {
-  background-color: #f9f9f9;
+  background: #fff;
   padding: 2rem;
-  border-radius: 1rem; /* Закругленные края блока */
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1); /* Тень блока входа без смещения */
-  max-width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
-  text-align: center;
-  margin-top: 25px; /* Уменьшаем отступ для расположения блока ниже */
+  max-width: 400px;
 }
 
 .auth-box h2 {
-  margin-bottom: 1rem;
-  font-weight: 800;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .auth-box form {
@@ -32,51 +26,64 @@
   gap: 1rem;
 }
 
-.auth-box form label {
+.auth-box label {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  font-weight: 600;
+  gap: 0.5rem;
+  font-weight: 500;
 }
 
-.auth-box form input {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #ccc;
-  width: 100%;
+.auth-box input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
 }
 
-.auth-box form button {
+.auth-box button {
+  padding: 0.75rem;
   background-color: #28a745;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
+  border-radius: 4px;
   cursor: pointer;
-  width: fit-content;
-  align-self: center;
+  font-size: 1rem;
+  margin-top: 1rem;
+  transition: background-color 0.2s;
 }
 
-.auth-box form button:hover {
+.auth-box button:hover {
   background-color: #218838;
 }
 
 .error-message {
-  color: #dc3545; /* Красный цвет */
-  background-color: #f8d7da; /* Белый фон с легким красным оттенком */
-  border: 1px solid #f5c6cb; /* Граница вокруг сообщения */
-  padding: 10px; /* Отступы внутри блока */
-  margin-bottom: 10px; /* Отступ снизу */
-  border-radius: 4px; /* Сглаженные углы */
-  font-size: 14px; /* Размер шрифта */
+  color: #dc3545;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
 }
 
 .success-message {
-  color: #28a745; /* Зеленый цвет */
-  background-color: #d4edda; /* Белый фон с легким зеленым оттенком */
-  border: 1px solid #c3e6cb; /* Граница вокруг сообщения */
-  padding: 10px; /* Отступы внутри блока */
-  margin-bottom: 10px; /* Отступ снизу */
-  border-radius: 4px; /* Сглаженные углы */
-  font-size: 14px; /* Размер шрифта */
+  color: #28a745;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+}
+
+.auth-link {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.auth-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
 }

@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
@@ -12,7 +11,7 @@ app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true
 }));
-app.use(bodyParser.json());
+app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Routes

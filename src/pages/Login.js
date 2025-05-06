@@ -1,33 +1,31 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../pages/auth.css';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
+  
     try {
       const result = await login({ email, password });
-      
-      if (result.success) {
-        navigate('/profile');
-      } else {
+      if (!result.success) {
         throw new Error(result.error || 'Login failed');
       }
-    } catch (err) {
-      console.error('Login error:', err);
-      setError(err.message || 'Invalid email or password');
-    } finally {
+      // Добавить перенаправление после успешного входа
+      navigate('/profile');
+    } catch (error) {
+      setError(error.message);
       setLoading(false);
     }
   };
@@ -36,7 +34,7 @@ const Login = () => {
     <div className="auth-container">
       <div className="auth-box">
         <h2>Login</h2>
-        {error && <p className="error-message">{error}</p>}
+        {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
           <label>
             Email:
@@ -60,6 +58,12 @@ const Login = () => {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+        <p className="auth-link">
+          Don't have an account? <Link to="/register">Register</Link>
+        </p>
+        <p className="auth-link">
+          Forgot password? <Link to="/request-reset">Reset it here</Link>
+        </p>
       </div>
     </div>
   );

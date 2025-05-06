@@ -6,12 +6,33 @@ import Header from './components/Header';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Upload from './pages/Upload';
+import PasswordResetPage from './components/PasswordResetPage';
 import './styles/global.css';
 import './styles/header.css';
 import './styles/footer.css';
 import './styles/soundItem.css';
-import { AuthProvider, useAuth } from './contexts/AuthContext'; // Добавляем useAuth в импорт
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AdminUsers from './pages/AdminUsers';
+
+const PrivateRoute = ({ element: Element }) => {
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return isAuthenticated ? <Element /> : <Navigate to="/login" />;
+};
+
+const AdminRoute = ({ element: Element }) => {
+  const { isAuthenticated, isAdmin, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return isAuthenticated && isAdmin ? <Element /> : <Navigate to="/" />;
+};
 
 const App = () => {
   const [searchFilters, setSearchFilters] = useState({});
@@ -29,6 +50,9 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/upload" element={<PrivateRoute element={Upload} />} />
               <Route path="/admin/users" element={<AdminRoute element={AdminUsers} />} />
+              <Route path="/request-reset" element={<PasswordResetPage />} />
+              <Route path="/reset-password" element={<PasswordResetPage />} />
+
             </Routes>
           </div>
           <footer className="footer">
@@ -38,28 +62,6 @@ const App = () => {
       </AuthProvider>
     </Router>
   );
-};
-
-// Управление пользователями
-const AdminRoute = ({ element: Element }) => {
-  const { isAuthenticated, isAdmin, loading } = useAuth();
-  
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  return isAuthenticated && isAdmin ? <Element /> : <Navigate to="/" />;
-};
-
-// PrivateRoute вынесен в отдельную функцию
-const PrivateRoute = ({ element: Element }) => {
-  const { isAuthenticated, loading } = useAuth(); // Теперь useAuth определен
-  
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  return isAuthenticated ? <Element /> : <Navigate to="/login" />;
 };
 
 export default App;
