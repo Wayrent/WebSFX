@@ -58,13 +58,12 @@ const SoundItem = ({
         >
           Add to Collection
         </button>
-        <button 
-          className="download-btn"
-          onClick={() => console.log('Download:', sound.id)}
-        >
-          <FontAwesomeIcon icon={faDownload} />
-          <span>Download</span>
-        </button>
+        <a href={sound.url} download>
+          <button className="download-btn">
+            <FontAwesomeIcon icon={faDownload} />
+            <span>Download</span>
+          </button>
+        </a>
       </div>
       
       {isModalOpen && (
