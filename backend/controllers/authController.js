@@ -30,31 +30,33 @@ const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const verificationToken = crypto.randomBytes(20).toString('hex');
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 3600000); // 1 час
 
-    const result = await query(
-      'INSERT INTO users (username, email, password, role, email_verified, reset_password_token) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [username, email, hashedPassword, role, false, verificationToken]
+    await query(
+      'INSERT INTO users (username, email, password, role, email_verified, verification_code, verification_expires) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+      [username, email, hashedPassword, role, false, verificationCode, expires]
     );
 
     const mailOptions = {
       from: `"SoundFX" <${process.env.EMAIL_FROM}>`,
       to: email,
-      subject: 'Email Verification',
-      html: `<p>Please verify your email by <a href="${process.env.BASE_URL}/verify-email?token=${verificationToken}">clicking here</a></p>`
-    };
+      subject: 'Подтверждение регистрации',
+      text: `Ваш код подтверждения: ${verificationCode}. Он действителен в течение 1 часа.`
+    };    
 
     await transporter.sendMail(mailOptions);
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful. Please check your email to verify your account.'
+      message: 'Код подтверждения отправлен на email. Пожалуйста, введите его для активации аккаунта.'
     });
   } catch (error) {
     console.error('Error registering user:', error);
     res.status(500).json({ error: 'Server error during registration' });
   }
 };
+
 
 // -------------------- ПОДТВЕРЖДЕНИЕ ПОЧТЫ --------------------
 const verifyEmail = async (req, res) => {
@@ -76,6 +78,27 @@ const verifyEmail = async (req, res) => {
     res.status(500).json({ success: false, error: 'Error verifying email' });
   }
 };
+
+const verifyRegistrationCode = async (req, res) => {
+  const { email, code } = req.body;
+
+  try {
+    const result = await query(
+      'UPDATE users SET email_verified = TRUE, verification_code = NULL, verification_expires = NULL WHERE email = $1 AND verification_code = $2 AND verification_expires > NOW() RETURNING *',
+      [email, code]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(400).json({ success: false, error: 'Invalid or expired verification code' });
+    }
+
+    res.status(200).json({ success: true, message: 'Email verified successfully. You can now log in.' });
+  } catch (error) {
+    console.error('Error verifying registration code:', error);
+    res.status(500).json({ success: false, error: 'Verification failed' });
+  }
+};
+
 
 // -------------------- ЛОГИН --------------------
 const loginUser = async (req, res) => {
@@ -140,11 +163,11 @@ const requestPasswordReset = async (req, res) => {
     );
 
     const mailOptions = {
+      from: `"SoundFX" <${process.env.EMAIL_FROM}>`,
       to: email,
-      from: process.env.EMAIL_FROM,
-      subject: 'Password Reset Code',
-      text: `You requested a password reset.\nYour code is: ${code}\n\nIf you did not request this, ignore this email.`
-    };
+      subject: 'Подтверждение регистрации',
+      text: `Ваш код подтверждения: ${verificationCode}. Он действителен в течение 1 часа.`
+    };    
 
     await transporter.sendMail(mailOptions);
 
@@ -214,5 +237,6 @@ module.exports = {
   verifyEmail,
   requestPasswordReset,
   verifyResetCode,
-  resetPassword
+  resetPassword,
+  verifyRegistrationCode // ← ЭТО ДОБАВЬ
 };

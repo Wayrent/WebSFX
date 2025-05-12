@@ -1,6 +1,6 @@
 /* Базовые сбросы */
 .header * {
-  box-sizing: border-box;
+  box-sizing: border-box;;
   margin: 0;
   padding: 0;
 }
@@ -11,12 +11,15 @@
   top: 0;
   left: 0;
   right: 0;
-  background-color: #f8f9fa;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding-top: 1vh;
+  padding-bottom: 1vh;
+  background-color: #ffffff;
+  box-shadow: 0 0px 5px rgba(0,0,0,0.1);
   z-index: 1000;
-  height: 60px;
   display: flex;
   align-items: center;
+  flex-direction: column;
+  align-items: stretch; /* чтобы занимала всю ширину */
 }
 
 .header-wrapper {
@@ -26,7 +29,6 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-  height: 100%;
 }
 
 /* Логотип */
@@ -42,42 +44,6 @@
   padding: 0 10px;
 }
 
-/* Группа поиска */
-.search-group {
-  display: flex;
-  align-items: center;
-  height: 40px;
-  margin: 0 20px;
-  flex-grow: 1;
-  max-width: 600px;
-}
-
-.search-input {
-  height: 100%;
-  padding: 0 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px 0 0 4px;
-  width: 100%;
-  font-size: 1rem;
-}
-
-.search-button {
-  height: 100%;
-  width: 50px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 0 4px 4px 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s;
-}
-
-.search-button:hover {
-  background-color: #218838;
-}
 
 /* Навигационные кнопки */
 .nav-buttons {
@@ -99,7 +65,8 @@
   transition: all 0.3s;
   position: relative;
   border: none;
-  color: white;
+  color: rgb(255, 255, 255);
+  background-color: #28a745;
 }
 
 .nav-btn::after {
@@ -127,14 +94,14 @@
 }
 
 /* Цвета кнопок */
-.profile { background-color: #28a745; }
-.profile:hover { background-color: #218838; }
+.profile { background-color: #2091c6; }
+.profile:hover { background-color: #18749f; }
 
 .upload { background-color: #6f42c1; }
-.upload:hover { background-color: #5a36b2; }
+.upload:hover { background-color: #4b2d95; }
 
 .logout { background-color: #dc3545; }
-.logout:hover { background-color: #c82333; }
+.logout:hover { background-color: #aa1f2c; }
 
 .login { background-color: #17a2b8; }
 .login:hover { background-color: #138496; }
@@ -143,39 +110,26 @@
 .register:hover { background-color: #218838; }
 
 /* Добавить в секцию цветов кнопок */
-.admin { background-color: #2091c6; color: #ffffff; }
-.admin:hover { background-color: #18749f; }
+.admin { background-color: #2cc0da; color: #ffffff; }
+.admin:hover { background-color: #22a3b9; }
 
-/* Адаптивность */
 @media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .header-wrapper {
-    padding: 0 10px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    width: 100%;
   }
-  
-  .search-group {
-    margin: 0 10px;
-  }
-  
+
   .nav-buttons {
-    gap: 8px;
-  }
-  
-  .nav-btn {
-    width: 36px;
-    height: 36px;
+    flex-wrap: nowrap;
   }
 }
 
-@media (max-width: 576px) {
-  .logo {
-    font-size: 1.2rem;
-  }
-  
-  .search-group {
-    margin: 0 5px;
-  }
-  
-  .search-input {
-    padding: 0 10px;
-  }
-}
+
