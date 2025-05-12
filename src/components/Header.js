@@ -1,5 +1,5 @@
 // Header.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -32,6 +32,7 @@ const Header = ({ onSearch }) => {
   });
 
   const navigate = useNavigate();
+  const filtersRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -41,8 +42,19 @@ const Header = ({ onSearch }) => {
       }
     };
 
+    const handleClickOutside = (e) => {
+      if (filtersRef.current && !filtersRef.current.contains(e.target)) {
+        setShowFilters(false);
+      }
+    };
+
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const handleSearch = () => {
@@ -50,7 +62,6 @@ const Header = ({ onSearch }) => {
       q: searchTerm,
       ...filters
     };
-
     navigate('/', { state: { searchParams } });
     if (onSearch) onSearch(searchParams);
   };
@@ -61,7 +72,6 @@ const Header = ({ onSearch }) => {
   };
 
   const resetFilters = () => {
-    setSearchTerm('');
     const reset = {
       category: '',
       bitrate: '',
@@ -69,6 +79,7 @@ const Header = ({ onSearch }) => {
       sortBy: 'title',
       sortOrder: 'asc'
     };
+    setSearchTerm('');
     setFilters(reset);
     onSearch({ q: '', ...reset });
   };
@@ -96,7 +107,7 @@ const Header = ({ onSearch }) => {
             </button>
 
             {showFilters && (
-              <div className="filters-dropdown" onClick={(e) => e.stopPropagation()}>
+              <div className="filters-dropdown" ref={filtersRef}>
                 <div className="filter-section">
                   <label>Категория:</label>
                   <select name="category" value={filters.category} onChange={handleFilterChange}>
@@ -213,7 +224,7 @@ const Header = ({ onSearch }) => {
             </div>
 
             {showFilters && (
-              <div className="filters-dropdown mobile">
+              <div className="filters-dropdown mobile" ref={filtersRef}>
                 <div className="filter-section">
                   <label>Категория:</label>
                   <select name="category" value={filters.category} onChange={handleFilterChange}>

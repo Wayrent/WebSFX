@@ -158,15 +158,3 @@ body {
   max-height: 90vh;
   overflow-y: auto;
 }
-
-/* Стили для подвала */
-.footer {
-  background-color: #000;
-  color: #fff;
-  text-align: center;
-  padding: 1rem;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: auto;
-}
-

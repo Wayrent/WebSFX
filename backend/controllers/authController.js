@@ -165,9 +165,9 @@ const requestPasswordReset = async (req, res) => {
     const mailOptions = {
       from: `"SoundFX" <${process.env.EMAIL_FROM}>`,
       to: email,
-      subject: 'Подтверждение регистрации',
-      text: `Ваш код подтверждения: ${verificationCode}. Он действителен в течение 1 часа.`
-    };    
+      subject: 'Сброс пароля',
+      text: `Ваш код для сброса пароля: ${code}. Он действителен в течение 1 часа.`
+    };      
 
     await transporter.sendMail(mailOptions);
 
