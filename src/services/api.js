@@ -63,16 +63,15 @@ export const register = async (userData) => {
 export const downloadSound = async (soundId) => {
   try {
     const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Вы должны войти в систему для скачивания');
-      return;
+    let headers = {};
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
 
     const response = await fetch(`http://localhost:5000/api/download/${soundId}`, {
       method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: headers,
     });
 
     if (!response.ok) {

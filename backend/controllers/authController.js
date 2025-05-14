@@ -15,9 +15,36 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// --- Вспомогательная функция: перенос скачиваний гостя в аккаунт ---
+async function migrateGuestDownloadsToUser(userId, ip) {
+  try {
+    // Обновляем все записи в downloads с этим IP и user_id = NULL
+    const result = await query(
+      'UPDATE downloads SET user_id = $1 WHERE ip_address = $2 AND user_id IS NULL RETURNING *',
+      [userId, ip]
+    );
+
+    // Считаем сколько записей было перенесено
+    const count = result.rows.length;
+
+    if (count > 0) {
+      // Обновляем статистику пользователя
+      await query(
+        'UPDATE users SET downloads_today = downloads_today + $1, last_download = NOW() WHERE id = $2',
+        [count, userId]
+      );
+    }
+
+    console.log(`Перенесено ${count} скачиваний гостя на пользователя ID=${userId}`);
+  } catch (error) {
+    console.error('Ошибка при переносе скачиваний гостя:', error);
+  }
+}
+
 // -------------------- РЕГИСТРАЦИЯ --------------------
 const registerUser = async (req, res) => {
   const { username, email, password, role = 'user' } = req.body;
+  const ip = req.ip || req.connection.remoteAddress;
 
   try {
     if (!email || !password || !username) {
@@ -33,19 +60,24 @@ const registerUser = async (req, res) => {
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const expires = new Date(Date.now() + 3600000); // 1 час
 
-    await query(
-      'INSERT INTO users (username, email, password, role, email_verified, verification_code, verification_expires) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+    const result = await query(
+      'INSERT INTO users (username, email, password, role, email_verified, verification_code, verification_expires) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
       [username, email, hashedPassword, role, false, verificationCode, expires]
     );
+
+    const newUser = result.rows[0];
 
     const mailOptions = {
       from: `"SoundFX" <${process.env.EMAIL_FROM}>`,
       to: email,
       subject: 'Подтверждение регистрации',
       text: `Ваш код подтверждения: ${verificationCode}. Он действителен в течение 1 часа.`
-    };    
+    };
 
     await transporter.sendMail(mailOptions);
+
+    // ✅ Переносим скачивания гостя в новый аккаунт
+    await migrateGuestDownloadsToUser(newUser.id, ip);
 
     res.status(201).json({
       success: true,
@@ -56,7 +88,6 @@ const registerUser = async (req, res) => {
     res.status(500).json({ error: 'Server error during registration' });
   }
 };
-
 
 // -------------------- ПОДТВЕРЖДЕНИЕ ПОЧТЫ --------------------
 const verifyEmail = async (req, res) => {
@@ -99,10 +130,11 @@ const verifyRegistrationCode = async (req, res) => {
   }
 };
 
-
 // -------------------- ЛОГИН --------------------
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
+  const ip = req.ip || req.connection.remoteAddress;
+
   try {
     if (!email || !password) {
       return res.status(400).json({ success: false, error: 'Email and password required' });
@@ -129,6 +161,9 @@ const loginUser = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
+
+    // ✅ Переносим скачивания гостя в аккаунт после входа
+    await migrateGuestDownloadsToUser(user.id, ip);
 
     res.status(200).json({
       success: true,
@@ -167,7 +202,7 @@ const requestPasswordReset = async (req, res) => {
       to: email,
       subject: 'Сброс пароля',
       text: `Ваш код для сброса пароля: ${code}. Он действителен в течение 1 часа.`
-    };      
+    };
 
     await transporter.sendMail(mailOptions);
 

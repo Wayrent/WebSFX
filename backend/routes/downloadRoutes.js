@@ -1,8 +1,10 @@
 const express = require('express');
-const router = express.Router();
-const { handleDownload } = require('../controllers/downloadController');
-const { verifyToken } = require('../middleware/authMiddleware'); // ✅ должно быть именованное
+const { verifyTokenOptional } = require('../middleware/authMiddleware'); // ← новый middleware
+const downloadController = require('../controllers/downloadController');
 
-router.get('/:soundId', verifyToken, handleDownload);
+const router = express.Router();
+
+// Гости и авторизованные могут скачивать → проверка внутри контроллера
+router.get('/:soundId', verifyTokenOptional, downloadController.handleDownload);
 
 module.exports = router;
