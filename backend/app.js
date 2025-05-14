@@ -4,7 +4,11 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
+const { verifyToken } = require('./middleware/authMiddleware');
+const adminMiddleware = require('./middleware/adminMiddleware');
 const PORT = process.env.PORT || 5000;
+
+const downloadRoutes = require('./routes/downloadRoutes');
 
 // Middleware
 app.use(cors({
@@ -17,15 +21,12 @@ app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/sounds', require('./routes/soundRoutes'));
-app.use('/api/collections', require('./middleware/authMiddleware'), require('./routes/collectionRoutes'));
-app.use('/api/user', require('./middleware/authMiddleware'), require('./routes/userRoutes'));
+app.use('/api/collections', verifyToken, require('./routes/collectionRoutes'));
+app.use('/api/user', verifyToken, require('./routes/userRoutes'));
+app.use('/api/download', require('./routes/downloadRoutes'));
 
 // Admin routes - ДОБАВЛЯЕМ ЭТОТ БЛОК
-app.use('/api/admin', 
-  require('./middleware/authMiddleware'),
-  require('./middleware/adminMiddleware'), 
-  require('./routes/adminRoutes') // Создадим новый файл для админских маршрутов
-);
+app.use('/api/admin', verifyToken, adminMiddleware, require('./routes/adminRoutes'));
 
 // Error handler
 app.use((err, req, res, next) => {

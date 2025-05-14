@@ -4,6 +4,8 @@ import CollectionModal from './CollectionModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../styles/soundItem.css';
+import { downloadSound } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const SoundItem = ({ 
   sound, 
@@ -14,6 +16,8 @@ const SoundItem = ({
   onDelete = () => {}
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { token } = useAuth();
 
   const handleAddToCollection = () => {
     if (!isAuthenticated) {
@@ -58,12 +62,15 @@ const SoundItem = ({
         >
           Add to Collection
         </button>
-        <a href={sound.url} download>
-          <button className="download-btn">
-            <FontAwesomeIcon icon={faDownload} />
-            <span>Download</span>
-          </button>
-        </a>
+        
+        <button
+          className="download-btn"
+          onClick={() => downloadSound(sound.id)}
+        >
+          <FontAwesomeIcon icon={faDownload} />
+          <span>Download</span>
+        </button>
+
       </div>
       
       {isModalOpen && (

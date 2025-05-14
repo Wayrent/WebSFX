@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const collectionsController = require('../controllers/collectionController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { verifyToken } = require('../middleware/authMiddleware');
 
-router.use(authMiddleware);
+router.use(verifyToken);
 
 router.get('/', collectionsController.getCollections);
 router.post('/', collectionsController.createCollection);

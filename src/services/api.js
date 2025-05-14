@@ -60,6 +60,43 @@ export const register = async (userData) => {
   }
 };
 
+export const downloadSound = async (soundId) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Вы должны войти в систему для скачивания');
+      return;
+    }
+
+    const response = await fetch(`http://localhost:5000/api/download/${soundId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      alert(errorData.error || 'Ошибка при скачивании');
+      return;
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sound_${soundId}.mp3`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Ошибка загрузки файла:', error);
+    alert('Ошибка при загрузке');
+  }
+};
+
 // Sound functions
 export const getSounds = async () => {
   try {

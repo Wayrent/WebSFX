@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const soundController = require('../controllers/soundController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { verifyToken } = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 
 router.get('/', async (req, res, next) => {
@@ -38,7 +38,7 @@ router.get('/search', async (req, res) => {
 });
 
 router.post('/upload',
-  authMiddleware,
+  verifyToken,
   adminMiddleware,
   soundController.upload.single('file'),
   async (req, res, next) => {
@@ -52,7 +52,7 @@ router.post('/upload',
 );
 
 router.delete('/:id',
-  authMiddleware,
+  verifyToken,
   adminMiddleware,
   soundController.deleteSound
 );
