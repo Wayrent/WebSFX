@@ -28,6 +28,8 @@ app.use('/api/download', require('./routes/downloadRoutes'));
 // Admin routes - ДОБАВЛЯЕМ ЭТОТ БЛОК
 app.use('/api/admin', verifyToken, adminMiddleware, require('./routes/adminRoutes'));
 
+app.use('/api/payment', require('./routes/paymentRoutes'));
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error('Server error:', err);

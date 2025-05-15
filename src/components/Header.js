@@ -87,7 +87,7 @@ const Header = ({ onSearch }) => {
   return (
     <header className="header">
       <div className="header-wrapper">
-        <Link to="/" className="logo">SoundLibrary</Link>
+        <Link to="/" className="logo">Auris SFX</Link>
 
         {!isMobile && (
           <div className="search-group desktop-search">

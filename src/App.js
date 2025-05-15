@@ -13,6 +13,7 @@ import './styles/footer.css';
 import './styles/soundItem.css';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AdminUsers from './pages/AdminUsers';
+import PaymentSuccess from './pages/PaymentSuccess';
 
 const PrivateRoute = ({ element: Element }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -52,11 +53,11 @@ const App = () => {
               <Route path="/admin/users" element={<AdminRoute element={AdminUsers} />} />
               <Route path="/request-reset" element={<PasswordResetPage />} />
               <Route path="/reset-password" element={<PasswordResetPage />} />
-
+              <Route path="/payment-success" element={<PaymentSuccess />} />
             </Routes>
           </div>
           <footer className="footer">
-            &copy; {new Date().getFullYear()} SoundLibrary. Все права защищены.
+            &copy; {new Date().getFullYear()} Auris SFX. Все права защищены.
           </footer>
         </div>
       </AuthProvider>

@@ -68,7 +68,7 @@ const registerUser = async (req, res) => {
     const newUser = result.rows[0];
 
     const mailOptions = {
-      from: `"SoundFX" <${process.env.EMAIL_FROM}>`,
+      from: `"Auris SFX" <${process.env.EMAIL_FROM}>`,
       to: email,
       subject: 'Подтверждение регистрации',
       text: `Ваш код подтверждения: ${verificationCode}. Он действителен в течение 1 часа.`
