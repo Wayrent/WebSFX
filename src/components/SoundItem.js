@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import CollectionModal from './CollectionModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faTimes, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import '../styles/soundItem.css';
 import { downloadSound } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -40,9 +40,11 @@ const SoundItem = ({
   };
 
   const handleRemoveFromCollection = () => {
-    if (window.confirm(`Удалить "${sound.title}" из этой коллекции?`)) {
-      onRemoveFromCollection(collectionId, sound.id);
-    }
+    showConfirm({
+    title: 'Удаление звука из коллекции',
+    message: `Вы уверены, что хотите удалить звук "${sound.title}" из этой коллекции?`,
+    onConfirm: () => onRemoveFromCollection(collectionId, sound.id)
+    });
   };
 
   return (
@@ -63,9 +65,9 @@ const SoundItem = ({
         <h5>{sound.title}</h5>
         <div className="sound-characteristics">
           <span className="category">{sound.category}</span>
-          <span className="tags">Tags: {sound.tags}</span>
-          <span className="bitrate">Bitrate: {sound.bitrate}</span>
-          <span className="duration">Duration: {sound.duration}s</span>
+          <span className="tags">Тэги: {sound.tags}</span>
+          <span className="bitrate">Битрейт: {sound.bitrate}</span>
+          <span className="duration">Длительность: {sound.duration}s</span>
         </div>
       </div>
 
@@ -76,13 +78,14 @@ const SoundItem = ({
       <div className="sound-actions">
         {onRemoveFromCollection === null && (
           <button className="add-to-collection-btn" onClick={handleAddToCollection}>
-            Add to Collection
+            <FontAwesomeIcon icon={faFolderOpen} />
+            <span>В коллекцию</span>
           </button>
         )}
 
         <button className="download-btn" onClick={() => downloadSound(sound.id)}>
           <FontAwesomeIcon icon={faDownload} />
-          <span>Download</span>
+          <span>Загрузить</span>
         </button>
       </div>
 

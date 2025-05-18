@@ -105,7 +105,7 @@ const Home = ({ searchFilters = {} }) => {
     return (
       <div className="loading">
         <div className="spinner"></div>
-        <p>Loading sounds...</p>
+        <p>Загружаем звуки...</p>
       </div>
     );
   }

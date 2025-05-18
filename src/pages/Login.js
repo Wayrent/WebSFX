@@ -16,13 +16,13 @@ const Login = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-  
+
     try {
       const result = await login({ email, password });
       if (!result.success) {
-        throw new Error(result.error || 'Login failed');
+        throw new Error(result.error || 'Ошибка входа');
       }
-      // Добавить перенаправление после успешного входа
+      // Перенаправление после успешного входа
       navigate('/profile');
     } catch (error) {
       setError(error.message);
@@ -33,7 +33,7 @@ const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h2>Login</h2>
+        <h2>Вход</h2>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
           <label>
@@ -46,7 +46,7 @@ const Login = () => {
             />
           </label>
           <label>
-            Password:
+            Пароль:
             <input
               type="password"
               value={password}
@@ -55,14 +55,14 @@ const Login = () => {
             />
           </label>
           <button type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Входим...' : 'Войти'}
           </button>
         </form>
         <p className="auth-link">
-          Don't have an account? <Link to="/register">Register</Link>
+          Нет аккаунта? <Link to="/register">Зарегистрируйтесь</Link>
         </p>
         <p className="auth-link">
-          Forgot password? <Link to="/request-reset">Reset it here</Link>
+          Забыли пароль? <Link to="/request-reset">Сбросьте его</Link>
         </p>
       </div>
     </div>

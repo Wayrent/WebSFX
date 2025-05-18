@@ -232,7 +232,7 @@ const Profile = () => {
   return (
     <div className="profile-page">
       <div className="profile-header">
-        <h2>Мой профиль — Auris SFX</h2>
+        <h2>Профиль {userData.username}</h2>
         <div className="user-info">
           <div className="info-row">
             <strong>Email:</strong> {userData.email}
