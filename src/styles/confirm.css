@@ -1,0 +1,25 @@
+/* В global.css или confirm.css */
+.custom-confirm-modal {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+.confirm-btn {
+  background-color:#28a745;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}

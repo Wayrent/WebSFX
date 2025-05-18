@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { uploadSound } from '../services/api';
 import '../styles/upload.css';
+import { toast } from 'react-toastify';
 
 const Upload = () => {
   const [formData, setFormData] = useState({
@@ -10,10 +11,9 @@ const Upload = () => {
     tags: '',
     bitrate: '192 kbps',
     quality: 'high',
-    duration: '',
     file: null
   });
-  const [status, setStatus] = useState({ loading: false, error: '', success: false });
+  const [status, setStatus] = useState({ loading: false });
   const navigate = useNavigate();
 
   const handleChange = e => {
@@ -22,12 +22,13 @@ const Upload = () => {
   };
 
   const handleFileChange = e => {
-    setFormData(prev => ({ ...prev, file: e.target.files[0] }));
+    const file = e.target.files[0];
+    setFormData(prev => ({ ...prev, file }));
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setStatus({ loading: true, error: '', success: false });
+    setStatus({ loading: true });
 
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
@@ -42,38 +43,37 @@ const Upload = () => {
         throw new Error(result.error);
       }
 
-      setStatus({ loading: false, error: '', success: true });
+      toast.success('Звук успешно загружен!');
       setTimeout(() => navigate('/'), 2000);
     } catch (err) {
-      console.error('Upload error:', err);
-      setStatus({
-        loading: false,
-        error: err.message || 'Upload failed',
-        success: false
-      });
+      console.error('Ошибка загрузки:', err);
+      toast.error(err.message || 'Не удалось загрузить звук');
+    } finally {
+      setStatus({ loading: false });
     }
   };
 
   return (
     <div className="upload-container">
-      <h2>Upload Sound</h2>
-      {status.error && <div className="error">{status.error}</div>}
-      {status.success && <div className="success">Sound uploaded successfully!</div>}
-      
+      <h2>Загрузка звука</h2>
+
       <form onSubmit={handleSubmit}>
-        <label>
-          Sound File (MP3/WAV):
-          <input
-            type="file"
-            name="file"
-            accept=".mp3,.wav,audio/*"
-            onChange={handleFileChange}
-            required
-          />
+        <label className="file-upload-label">
+          Файл звука (MP3/WAV):
+          <div className="custom-file-input">
+            <input
+              type="file"
+              name="file"
+              accept=".mp3,.wav,audio/*"
+              onChange={handleFileChange}
+              required
+            />
+            <span>{formData.file?.name || 'Выбрать файл'}</span>
+          </div>
         </label>
-        
+
         <label>
-          Title:
+          Название:
           <input
             type="text"
             name="title"
@@ -82,9 +82,9 @@ const Upload = () => {
             required
           />
         </label>
-        
+
         <label>
-          Category:
+          Категория:
           <input
             type="text"
             name="category"
@@ -93,9 +93,9 @@ const Upload = () => {
             required
           />
         </label>
-        
+
         <label>
-          Tags (comma separated):
+          Теги (через запятую):
           <input
             type="text"
             name="tags"
@@ -105,46 +105,20 @@ const Upload = () => {
         </label>
 
         <label>
-          Bitrate:
-          <select
-            name="bitrate"
-            value={formData.bitrate}
-            onChange={handleChange}
-          >
-            <option value="128 kbps">128 kbps</option>
-            <option value="192 kbps">192 kbps</option>
-            <option value="256 kbps">256 kbps</option>
-            <option value="320 kbps">320 kbps</option>
-          </select>
-        </label>
-
-        <label>
-          Quality:
+          Качество:
           <select
             name="quality"
             value={formData.quality}
             onChange={handleChange}
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="low">Низкое</option>
+            <option value="medium">Среднее</option>
+            <option value="high">Высокое</option>
           </select>
         </label>
 
-        <label>
-          Duration (seconds):
-          <input
-            type="number"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            min="1"
-            required
-          />
-        </label>
-        
         <button type="submit" disabled={status.loading}>
-          {status.loading ? 'Uploading...' : 'Upload Sound'}
+          {status.loading ? 'Загрузка...' : 'Загрузить звук'}
         </button>
       </form>
     </div>

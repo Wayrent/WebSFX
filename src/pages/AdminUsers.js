@@ -5,6 +5,7 @@ import { faEdit, faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
 import api from '../services/api';
 import '../styles/adminUsers.css';
 import { toast } from 'react-toastify';
+import { showConfirm } from '../components/ConfirmDialog'; // ← добавлено
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -42,20 +43,22 @@ const AdminUsers = () => {
     fetchUsers();
   }, [navigate]);
 
-    // Добавим в компонент новую функцию:
-    const handleDeleteUser = async (userId, username) => {
-        if (window.confirm(`Вы уверены, что хотите удалить пользователя ${username}?`)) {
+  const handleDeleteUser = (userId, username) => {
+    showConfirm({
+      title: 'Удаление пользователя',
+      message: `Вы уверены, что хотите удалить пользователя ${username}?`,
+      onConfirm: async () => {
         try {
-            const response = await api.delete(`/admin/users/${userId}`);
-            if (response.data.success) {
+          const response = await api.delete(`/admin/users/${userId}`);
+          if (response.data.success) {
             setUsers(users.filter(user => user.id !== userId));
-            }
+          }
         } catch (err) {
-            setError(err.response?.data?.error || 'Не удалось удалить пользователя');
+          setError(err.response?.data?.error || 'Не удалось удалить пользователя');
         }
-        }
-    };
-    
+      }
+    });
+  };
 
   const handleEdit = (user) => {
     setEditingId(user.id);
@@ -89,22 +92,26 @@ const AdminUsers = () => {
     setEditData(prev => ({ ...prev, [name]: value }));
   };
 
-  const resetPassword = async (userId) => {
-    if (window.confirm('Сбросить пароль на "password123"?')) {
-      try {
-        await api.post(`/admin/users/${userId}/reset-password`);
-        toast.success('Пароль сброшен успешно');
-      } catch (err) {
-        setError(err.response?.data?.error || 'Не удалось сбросить пароль');
+  const resetPassword = (userId) => {
+    showConfirm({
+      title: 'Сброс пароля',
+      message: 'Сбросить пароль на "password123"?',
+      onConfirm: async () => {
+        try {
+          await api.post(`/admin/users/${userId}/reset-password`);
+          toast.success('Пароль сброшен успешно');
+        } catch (err) {
+          setError(err.response?.data?.error || 'Не удалось сбросить пароль');
+        }
       }
-    }
+    });
   };
 
-  if (loading) return <div className="loading">Loading users...</div>;
+  if (loading) return <div className="loading">Загрузка пользователей...</div>;
 
   return (
     <div className="admin-users-container">
-      <h2>User Management</h2>
+      <h2>Управление пользователями</h2>
       {error && <div className="error-message">{error}</div>}
       
       <div className="users-list">
@@ -113,7 +120,7 @@ const AdminUsers = () => {
             {editingId === user.id ? (
               <>
                 <div className="form-group">
-                  <label>Username:</label>
+                  <label>Имя пользователя:</label>
                   <input
                     type="text"
                     name="username"
@@ -135,13 +142,13 @@ const AdminUsers = () => {
                     onClick={() => handleSave(user.id)}
                     className="save-btn"
                   >
-                    <FontAwesomeIcon icon={faSave} /> Save
+                    <FontAwesomeIcon icon={faSave} /> Сохранить
                   </button>
                   <button 
                     onClick={handleCancel}
                     className="cancel-btn"
                   >
-                    <FontAwesomeIcon icon={faTimes} /> Cancel
+                    <FontAwesomeIcon icon={faTimes} /> Отмена
                   </button>
                 </div>
               </>
@@ -149,7 +156,6 @@ const AdminUsers = () => {
               <>
                 <button 
                     className="delete-user-btn"
-                    
                     onClick={() => handleDeleteUser(user.id, user.username)}
                     title="Удалить пользователя"
                 >
@@ -157,22 +163,22 @@ const AdminUsers = () => {
                 </button>
                 <div className="user-info">
                   <div><strong>ID:</strong> {user.id}</div>
-                  <div><strong>Username:</strong> {user.username}</div>
+                  <div><strong>Имя пользователя:</strong> {user.username}</div>
                   <div><strong>Email:</strong> {user.email}</div>
-                  <div><strong>Role:</strong> {user.role}</div>
+                  <div><strong>Роль:</strong> {user.role}</div>
                 </div>
                 <div className="user-actions">
                   <button 
                     onClick={() => handleEdit(user)}
                     className="edit-btn"
                   >
-                    <FontAwesomeIcon icon={faEdit} /> Edit
+                    <FontAwesomeIcon icon={faEdit} /> Редактировать
                   </button>
                   <button 
                     onClick={() => resetPassword(user.id)}
                     className="reset-btn"
                   >
-                    Reset Password
+                    Сбросить пароль
                   </button>
                 </div>
               </>

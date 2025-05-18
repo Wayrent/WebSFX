@@ -2,6 +2,7 @@ const { query } = require('../models/soundModel');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const mm = require('music-metadata'); // ← библиотека для анализа аудио
 
 // Multer configuration
 const storage = multer.diskStorage({
@@ -21,7 +22,9 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/x-wav'];
-  allowedTypes.includes(file.mimetype) ? cb(null, true) : cb(new Error('Invalid file type. Only MP3/WAV allowed'), false);
+  allowedTypes.includes(file.mimetype)
+    ? cb(null, true)
+    : cb(new Error('Invalid file type. Only MP3/WAV allowed'), false);
 };
 
 const upload = multer({ 
@@ -106,11 +109,21 @@ const searchSounds = async (filters) => {
 const uploadSound = async (req) => {
   try {
     if (!req.file) {
-      throw new Error('No file uploaded');
+      throw new Error('Файл не загружен');
     }
 
-    const { title, category, tags, bitrate, quality, duration } = req.body;
+    const { title, category, tags, quality } = req.body;
     const filePath = `/uploads/${req.file.filename}`;
+    const fullPath = path.join(__dirname, '../../public', filePath);
+
+    // Получаем метаданные аудиофайла
+    const metadata = await mm.parseFile(fullPath);
+    const duration = metadata.format.duration
+      ? Math.round(metadata.format.duration)
+      : 0;
+    const bitrate = metadata.format.bitrate
+      ? `${Math.round(metadata.format.bitrate / 1000)} kbps`
+      : 'unknown';
 
     const result = await query(
       `INSERT INTO sounds (title, category, tags, bitrate, quality, duration, url)

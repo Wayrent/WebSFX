@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import '../styles/global.css';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Home = ({ searchFilters = {} }) => {
   const [sounds, setSounds] = useState([]);
@@ -16,12 +17,18 @@ const Home = ({ searchFilters = {} }) => {
 
   // Добавляем обработку состояния из навигации
   useEffect(() => {
-    if (location.state?.searchParams) {
-      loadSounds(location.state.searchParams);
-    } else {
-      loadSounds(searchFilters);
-    }
-  }, [searchFilters, location.state]);
+    const filters = location.state?.searchParams || searchFilters;
+
+    const loadData = async () => {
+      await loadSounds(filters);
+      if (isAuthenticated) {
+        await loadCollections();
+      }
+    };
+
+    loadData();
+  }, [searchFilters, location.state, isAuthenticated]);
+
 
   const loadSounds = async (filters = {}) => {
     try {
@@ -45,11 +52,12 @@ const Home = ({ searchFilters = {} }) => {
       if (result.success) {
         setSounds(result.data || []);
         if (result.data.length === 0) {
-          setError('No sounds found matching your criteria');
+          toast.info('Сбрось фильтры или попробуй выбрать другие!');
+          toast.warning('Здесь пока нет звуков по таким параметрам поиска.');
         }
       } else {
         setSounds([]);
-        setError(result.error || 'Failed to load sounds');
+        setError(result.error || 'Ошибка загрузки звуков');
       }
     } catch (err) {
       console.error('Error loading sounds:', err);
@@ -71,7 +79,7 @@ const Home = ({ searchFilters = {} }) => {
       }
     } catch (error) {
       console.error('Error deleting sound:', error);
-      setError(error.message || 'Failed to delete sound');
+      setError(error.message || 'Ошибка удаления звука');
     }
   };
 
@@ -85,18 +93,6 @@ const Home = ({ searchFilters = {} }) => {
       console.error('Error loading collections:', err);
     }
   };
-
-  useEffect(() => {
-    const loadData = async () => {
-      await loadSounds(searchFilters);
-      
-      if (isAuthenticated) {
-        await loadCollections();
-      }
-    };
-
-    loadData();
-  }, [searchFilters, isAuthenticated]);
 
   useEffect(() => {
     if (error) {

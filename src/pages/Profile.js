@@ -16,13 +16,15 @@ import {
   createCollection,
   deleteCollection,
   updateUserNote,
-  getUserProfile
+  getUserProfile,
+  removeSoundFromCollection
 } from '../services/api';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import '../styles/profile.css';
 import { toast } from 'react-toastify';
+import { showConfirm } from '../components/ConfirmDialog';
 
 const Profile = () => {
   const [collections, setCollections] = useState([]);
@@ -117,27 +119,36 @@ const Profile = () => {
     }
   };
 
-  const handleDeleteCollection = async (collectionId) => {
-    if (!window.confirm('Вы уверены, что хотите удалить эту коллекцию?')) return;
-    
-    try {
-      setIsLoading(true);
-      const response = await deleteCollection(collectionId);
-      
-      if (response.success) {
-        setCollections(prev => prev.filter(c => c.id !== collectionId));
-        setSoundsInCollection(prev => {
-          const newSounds = {...prev};
-          delete newSounds[collectionId];
-          return newSounds;
-        });
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDeleteCollection = (collectionId) => {
+    showConfirm({
+      title: 'Удаление коллекции',
+      message: 'Вы уверены, что хотите удалить эту коллекцию?',
+      onConfirm: () => performCollectionDeletion(collectionId),
+      onCancel: () => console.log('Удаление отменено')
+    });
   };
+
+  const performCollectionDeletion = async (collectionId) => {
+  try {
+    setIsLoading(true);
+    const response = await deleteCollection(collectionId);
+    
+    if (response.success) {
+      setCollections(prev => prev.filter(c => c.id !== collectionId));
+      setSoundsInCollection(prev => {
+        const newSounds = { ...prev };
+        delete newSounds[collectionId];
+        return newSounds;
+      });
+    }
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
 
   const toggleCollection = (collectionId) => {
     setExpandedCollections(prev => ({
@@ -162,6 +173,20 @@ const Profile = () => {
     }
   };
 
+    const handleRemoveFromCollection = async (collectionId, soundId) => {
+    try {
+      await removeSoundFromCollection(collectionId, soundId);
+      setSoundsInCollection(prev => ({
+        ...prev,
+        [collectionId]: prev[collectionId].filter(s => s.id !== soundId)
+      }));
+    } catch (err) {
+      console.error('Ошибка удаления из коллекции:', err);
+      toast.error('Не удалось удалить звук из коллекции');
+    }
+  };
+
+  
   const handleSubscribe = async () => {
     try {
       const response = await axios.post(
@@ -315,6 +340,8 @@ const Profile = () => {
                             isAdmin={userData?.role === 'admin'}
                             onDelete={handleDeleteSound}
                             showActions={false}
+                            onRemoveFromCollection={handleRemoveFromCollection}
+                            collectionId={collection.id}
                           />
                         ))}
                       </div>
