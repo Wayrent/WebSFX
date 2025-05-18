@@ -48,12 +48,12 @@ const registerUser = async (req, res) => {
 
   try {
     if (!email || !password || !username) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ error: 'Не заполнены необходимые поля' });
     }
 
     const emailCheck = await query('SELECT * FROM users WHERE email = $1', [email]);
     if (emailCheck.rows.length) {
-      return res.status(400).json({ error: 'Email already registered' });
+      return res.status(400).json({ error: 'Почта уже зарегистрирована' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -85,7 +85,7 @@ const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.error('Error registering user:', error);
-    res.status(500).json({ error: 'Server error during registration' });
+    res.status(500).json({ error: 'Ошибка сервера при регистрации' });
   }
 };
 
@@ -100,13 +100,13 @@ const verifyEmail = async (req, res) => {
     );
 
     if (result.rowCount === 0) {
-      return res.status(400).json({ success: false, error: 'Invalid verification token' });
+      return res.status(400).json({ success: false, error: 'Неверный проверочный токен' });
     }
 
-    res.status(200).json({ success: true, message: 'Email verified successfully' });
+    res.status(200).json({ success: true, message: 'Почта успешно подтверждена' });
   } catch (error) {
     console.error('Error verifying email:', error);
-    res.status(500).json({ success: false, error: 'Error verifying email' });
+    res.status(500).json({ success: false, error: 'Ошибка подтверждения почты' });
   }
 };
 
@@ -120,13 +120,13 @@ const verifyRegistrationCode = async (req, res) => {
     );
 
     if (result.rowCount === 0) {
-      return res.status(400).json({ success: false, error: 'Invalid or expired verification code' });
+      return res.status(400).json({ success: false, error: 'Неверный или истекший проверочный код' });
     }
 
-    res.status(200).json({ success: true, message: 'Email verified successfully. You can now log in.' });
+    res.status(200).json({ success: true, message: 'Почта успешно подтверждена. Вы можете войти' });
   } catch (error) {
     console.error('Error verifying registration code:', error);
-    res.status(500).json({ success: false, error: 'Verification failed' });
+    res.status(500).json({ success: false, error: 'Подтверждение не удалось' });
   }
 };
 
@@ -137,23 +137,23 @@ const loginUser = async (req, res) => {
 
   try {
     if (!email || !password) {
-      return res.status(400).json({ success: false, error: 'Email and password required' });
+      return res.status(400).json({ success: false, error: 'Необходимы почта и пароль' });
     }
 
     const result = await query('SELECT * FROM users WHERE email = $1', [email]);
     if (result.rowCount === 0) {
-      return res.status(401).json({ success: false, error: 'Invalid email or password' });
+      return res.status(401).json({ success: false, error: 'Неверный логин или пароль' });
     }
 
     const user = result.rows[0];
 
     if (!user.password) {
-      return res.status(500).json({ success: false, error: 'Password missing in database' });
+      return res.status(500).json({ success: false, error: 'Пароль отсутствует в базе данных' });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ success: false, error: 'Invalid email or password' });
+      return res.status(401).json({ success: false, error: 'Неверный логин или пароль' });
     }
 
     const token = jwt.sign(
@@ -175,7 +175,7 @@ const loginUser = async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
+    res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' });
   }
 };
 
@@ -186,7 +186,7 @@ const requestPasswordReset = async (req, res) => {
   try {
     const user = await query('SELECT * FROM users WHERE email = $1', [email]);
     if (!user.rows.length) {
-      return res.status(404).json({ success: false, error: 'User not found' });
+      return res.status(404).json({ success: false, error: 'Пользователь не найден' });
     }
 
     const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-значный код
@@ -206,10 +206,10 @@ const requestPasswordReset = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    res.status(200).json({ success: true, message: 'Reset code sent to email' });
+    res.status(200).json({ success: true, message: 'Код для сброса отправлен на почту' });
   } catch (error) {
     console.error('Error in requestPasswordReset:', error);
-    res.status(500).json({ success: false, error: 'Error sending reset email' });
+    res.status(500).json({ success: false, error: 'Ошибка отправки кода для сброса' });
   }
 };
 
@@ -224,13 +224,13 @@ const verifyResetCode = async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(400).json({ success: false, error: 'Invalid or expired reset code' });
+      return res.status(400).json({ success: false, error: 'Неверный или истекший код для сброса' });
     }
 
-    res.status(200).json({ success: true, message: 'Reset code verified' });
+    res.status(200).json({ success: true, message: 'Код для сброса подтвержден' });
   } catch (error) {
     console.error('Error in verifyResetCode:', error);
-    res.status(500).json({ success: false, error: 'Error verifying reset code' });
+    res.status(500).json({ success: false, error: 'Ошибка в проверке кода для сброса' });
   }
 };
 
@@ -239,7 +239,7 @@ const resetPassword = async (req, res) => {
   const { email, token, newPassword, confirmPassword } = req.body;
 
   if (newPassword !== confirmPassword) {
-    return res.status(400).json({ success: false, error: 'Passwords do not match' });
+    return res.status(400).json({ success: false, error: 'Пароли не совпадают' });
   }
 
   try {
@@ -249,7 +249,7 @@ const resetPassword = async (req, res) => {
     );
 
     if (!user.rows.length) {
-      return res.status(400).json({ success: false, error: 'Invalid or expired reset code' });
+      return res.status(400).json({ success: false, error: 'Неверный или истекший код для сброса' });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -259,10 +259,10 @@ const resetPassword = async (req, res) => {
       [hashedPassword, email]
     );
 
-    res.status(200).json({ success: true, message: 'Password updated successfully' });
+    res.status(200).json({ success: true, message: 'Пароль успешно обновлен' });
   } catch (error) {
     console.error('Error in resetPassword:', error);
-    res.status(500).json({ success: false, error: 'Error resetting password' });
+    res.status(500).json({ success: false, error: 'Ошибка при сбросе пароля' });
   }
 };
 

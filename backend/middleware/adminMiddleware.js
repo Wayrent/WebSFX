@@ -42,7 +42,7 @@ const adminMiddleware = async (req, res, next) => {
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({ 
         success: false,
-        error: 'Invalid token' 
+        error: 'Неверный токен' 
       });
     }
 

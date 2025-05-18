@@ -24,7 +24,7 @@ const fileFilter = (req, file, cb) => {
   const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/x-wav'];
   allowedTypes.includes(file.mimetype)
     ? cb(null, true)
-    : cb(new Error('Invalid file type. Only MP3/WAV allowed'), false);
+    : cb(new Error('Неверный тип файла. Поддерживаются только MP3/WAV'), false);
 };
 
 const upload = multer({ 

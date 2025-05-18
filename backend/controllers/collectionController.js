@@ -48,7 +48,7 @@ const createCollection = async (req, res) => {
   if (!name || typeof name !== 'string') {
     return res.status(400).json({ 
       success: false,
-      error: 'Invalid collection name' 
+      error: 'Неправильное название коллекции' 
     });
   }
 
