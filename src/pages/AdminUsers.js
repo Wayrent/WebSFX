@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
 import api from '../services/api';
 import '../styles/adminUsers.css';
+import { toast } from 'react-toastify';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -24,11 +25,11 @@ const AdminUsers = () => {
         if (response.data?.success) {
           setUsers(response.data.data);
         } else {
-          setError(response.data?.error || 'Failed to load users');
+          setError(response.data?.error || 'Не удалось загрузить пользователей');
         }
       } catch (err) {
-        console.error('Error fetching users:', err);
-        setError(err.response?.data?.error || 'Server error');
+        console.error('Не удалось произвести фетч пользователей:', err);
+        setError(err.response?.data?.error || 'Ошибка сервера');
         
         if (err.response?.status === 403) {
           navigate('/');
@@ -50,7 +51,7 @@ const AdminUsers = () => {
             setUsers(users.filter(user => user.id !== userId));
             }
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to delete user');
+            setError(err.response?.data?.error || 'Не удалось удалить пользователя');
         }
         }
     };
@@ -79,7 +80,7 @@ const AdminUsers = () => {
         setEditingId(null);
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Update failed');
+      setError(err.response?.data?.error || 'Обновление не удалось');
     }
   };
 
@@ -89,12 +90,12 @@ const AdminUsers = () => {
   };
 
   const resetPassword = async (userId) => {
-    if (window.confirm('Reset password to "password123"?')) {
+    if (window.confirm('Сбросить пароль на "password123"?')) {
       try {
         await api.post(`/admin/users/${userId}/reset-password`);
-        alert('Password reset successfully');
+        toast.success('Пароль сброшен успешно');
       } catch (err) {
-        setError(err.response?.data?.error || 'Password reset failed');
+        setError(err.response?.data?.error || 'Не удалось сбросить пароль');
       }
     }
   };

@@ -145,7 +145,7 @@ const Home = ({ searchFilters = {} }) => {
               <p>{error}</p>
             ) : (
               <>
-                <p>No sounds available yet.</p>
+                <p>Звуки пока недоступны...</p>
                 {isAuthenticated && user?.isAdmin && (
                   <p>You can upload new sounds using the Upload button in the header.</p>
                 )}

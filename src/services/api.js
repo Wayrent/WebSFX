@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
@@ -63,10 +64,15 @@ export const register = async (userData) => {
 export const downloadSound = async (soundId) => {
   try {
     const token = localStorage.getItem('token');
+    const guestId = localStorage.getItem('guestId');
     let headers = {};
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    if (guestId) {
+      headers['x-guest-id'] = guestId;
     }
 
     const response = await fetch(`http://localhost:5000/api/download/${soundId}`, {
@@ -76,7 +82,7 @@ export const downloadSound = async (soundId) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      alert(errorData.error || 'Ошибка при скачивании');
+      toast.error(errorData.error || 'Ошибка при скачивании');
       return;
     }
 
@@ -92,7 +98,7 @@ export const downloadSound = async (soundId) => {
     window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error('Ошибка загрузки файла:', error);
-    alert('Ошибка при загрузке');
+    toast.error('Ошибка при загрузке');
   }
 };
 

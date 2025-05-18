@@ -6,6 +6,7 @@ import { faDownload, faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../styles/soundItem.css';
 import { downloadSound } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { toast } from 'react-toastify';
 
 const SoundItem = ({ 
   sound, 
@@ -21,7 +22,7 @@ const SoundItem = ({
 
   const handleAddToCollection = () => {
     if (!isAuthenticated) {
-      alert('Авторизуйтесь, чтобы создать коллекцию');
+      toast.info('Авторизуйтесь, чтобы создать коллекцию');
       return;
     }
     setIsModalOpen(true);

@@ -22,6 +22,7 @@ import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import '../styles/profile.css';
+import { toast } from 'react-toastify';
 
 const Profile = () => {
   const [collections, setCollections] = useState([]);
@@ -177,7 +178,7 @@ const Profile = () => {
       }
     } catch (err) {
       console.error('Ошибка при создании оплаты:', err);
-      alert('Не удалось создать оплату. Попробуйте позже.');
+      toast.error('Не удалось создать оплату. Попробуйте позже.');
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
@@ -14,6 +14,8 @@ import './styles/soundItem.css';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AdminUsers from './pages/AdminUsers';
 import PaymentSuccess from './pages/PaymentSuccess';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PrivateRoute = ({ element: Element }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -38,6 +40,14 @@ const AdminRoute = ({ element: Element }) => {
 const App = () => {
   const [searchFilters, setSearchFilters] = useState({});
 
+  // Генерация и сохранение guestId для гостей
+  useEffect(() => {
+    if (!localStorage.getItem('guestId')) {
+      const guestId = 'guest_' + Math.random().toString(36).substring(2, 12);
+      localStorage.setItem('guestId', guestId);
+    }
+  }, []);
+
   return (
     <Router>
       <AuthProvider>
@@ -59,6 +69,17 @@ const App = () => {
           <footer className="footer">
             &copy; {new Date().getFullYear()} Auris SFX. Все права защищены.
           </footer>
+          <ToastContainer 
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
         </div>
       </AuthProvider>
     </Router>
