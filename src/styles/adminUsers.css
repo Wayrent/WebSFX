@@ -110,7 +110,7 @@
 
   .delete-user-btn {
     position: absolute;
-    top: 10px;
+    top: 0px;
     right: 10px;
     background: #dc3545;
     color: white;
@@ -137,6 +137,10 @@
     /* ... остальные стили ... */
   }
   
+  .subscriber {
+  box-shadow: 0 1px 10px rgba(106, 255, 131, 0.597);
+}
+
   /* Адаптация для мобильных */
   @media (max-width: 768px) {
     .delete-user-btn {

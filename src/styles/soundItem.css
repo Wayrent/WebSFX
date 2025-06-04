@@ -148,7 +148,7 @@
 
 .sound-delete-btn {
   position: absolute;
-  top: 10px;
+  top: 0px;
   right: 10px;
   background: #dc3545;
   color: white;

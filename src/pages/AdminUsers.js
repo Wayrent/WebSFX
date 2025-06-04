@@ -124,7 +124,8 @@ const AdminUsers = () => {
       
       <div className="users-list">
         {users.map(user => (
-          <div key={user.id} className="user-card">
+          <div key={user.id}
+          className={`user-card ${user.subscription_status === 'active' ? 'subscriber' : ''}`}>         
             {editingId === user.id ? (
               <>
                 <div className="form-group">
@@ -178,6 +179,15 @@ const AdminUsers = () => {
                   <div><strong>Имя пользователя:</strong> {user.username}</div>
                   <div><strong>Email:</strong> {user.email}</div>
                   <div><strong>Роль:</strong> {user.role}</div>
+                    <div>
+                  <strong>Подписка:</strong>{' '}
+                  {user.subscription_status === 'active' ? (
+                    <span style={{ color: 'green', fontWeight: 'bold' }}>активна ✅</span>
+                  ) : (
+                    <span style={{ color: 'gray' }}>не активна ❌</span>
+                  )}
+      
+                </div>
                 </div>
                 <div className="user-actions">
                   <button 

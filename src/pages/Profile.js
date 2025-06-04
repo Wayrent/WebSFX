@@ -260,81 +260,82 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
-      <div className="profile-header">
+    {/* ВЕРХНЯЯ ЧАСТЬ: профиль и подписка */}
+    <div className="profile-top-columns">
+      {/* Левая колонка: имя, email, заметка */}
+      <div className="profile-left">
         <h2>{userData.username}</h2>
-        <div className="user-info">
-          <div className="info-row">
-            <strong>Email:</strong> {userData.email}
-          </div>
-          <div className="info-row">
-            <strong>Подписка:</strong>{' '}
-            {userData.subscription_status === 'active' ? (
-            <span className="subscription-active">
-              активна ✅
-              {userData.subscription_end && (
-                <>
-                  {' '}(
-                  <span
-                    style={{
-                      color:
-                        (new Date(userData.subscription_end) - Date.now()) / (1000 * 60 * 60 * 24) <= 3
-                          ? 'red'
-                          : 'inherit'
-                    }}
-                  >
-                    {Math.ceil((new Date(userData.subscription_end) - Date.now()) / (1000 * 60 * 60 * 24))} дней
-                  </span>
-                  {' '}до окончания)
-                </>
-              )}
-              <br />
+        <div className="info-row"><strong>Email:</strong> {userData.email}</div>
+        <div className="info-row">
+          <strong>О себе:</strong>
+          {isEditingNote ? (
+            <div className="note-edit">
+              <textarea
+                value={editedNote}
+                onChange={(e) => setEditedNote(e.target.value)}
+                rows="3"
+              />
+              <button onClick={handleUpdateNote} className="icon-button save">
+                <FontAwesomeIcon icon={faCheck} />
+              </button>
+            </div>
+          ) : (
+            <div className="note-display">
+              {userData.note || 'Нет информации'}
+              <button onClick={() => setIsEditingNote(true)} className="icon-button edit">
+                <FontAwesomeIcon icon={faEdit} />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Правая колонка: подписка */}
+      <div className="profile-right">
+        <div className="subscription-banner">
+          {userData.subscription_status === 'active' ? (
+            <>
+              <h3>Спасибо за подписку! 🎧</h3>
+              <ul>
+                <li>✔ Безлимитное скачивание</li>
+                <li>✔ Доступ к эксклюзивным звукам</li>
+                <li>✔ Поддержка проекта</li>
+              </ul>
+              <p style={{ fontStyle: 'italic', marginTop: '10px' }}>
+                Осталось дней:{' '}
+                <strong style={{
+                  color:
+                    (new Date(userData.subscription_end) - Date.now()) / (1000 * 60 * 60 * 24) <= 3
+                      ? 'red'
+                      : 'inherit'
+                }}>
+                  {Math.ceil((new Date(userData.subscription_end) - Date.now()) / (1000 * 60 * 60 * 24))}
+                </strong>
+              </p>
               <button
                 onClick={handleCancelSubscription}
-                className="cancel-subscription-button"
-                style={{ marginTop: '5px' }}
+                className="cancel-subscription-button subtle"
               >
                 Отменить подписку
               </button>
-            </span>
+            </>
           ) : (
-            <span className="subscription-inactive-wrapper">
-              <span className="subscription-inactive">не активна ❌</span>
-              <button onClick={handleSubscribe} className="subscribe-button">
+            <>
+              <h3>Подключите подписку 🎵</h3>
+              <p>Вы получите:</p>
+              <ul>
+                <li>✔ До 100 скачиваний в день</li>
+                <li>✔ Доступ к эксклюзивным звукам</li>
+                <li>✔ Поддержка проекта</li>
+              </ul>
+              <button onClick={handleSubscribe} className="subscribe-button big">
                 Купить за 100₽ / мес
               </button>
-            </span>
+            </>
           )}
-          </div>
-          <div className="info-row">
-            <strong>О себе:</strong>
-            {isEditingNote ? (
-              <div className="note-edit">
-                <textarea
-                  value={editedNote}
-                  onChange={(e) => setEditedNote(e.target.value)}
-                  rows="3"
-                />
-                <button 
-                  onClick={handleUpdateNote}
-                  className="icon-button save"
-                >
-                  <FontAwesomeIcon icon={faCheck} />
-                </button>
-              </div>
-            ) : (
-              <div className="note-display">
-                {userData.note || 'Нет информации'}
-                <button 
-                  onClick={() => setIsEditingNote(true)}
-                  className="icon-button edit"
-                >
-                  <FontAwesomeIcon icon={faEdit} />
-                </button>
-              </div>
-            )}
-          </div>
         </div>
       </div>
+    </div>
 
       <div className="collections-section">
         <div className="section-header">

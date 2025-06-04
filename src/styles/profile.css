@@ -31,6 +31,9 @@
   flex: 1;
   margin-left: 1rem;
   position: relative;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .note-edit textarea {
@@ -74,7 +77,7 @@
 }
 
 .create-collection-button {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 2rem;
   background-color: #28a745;
   color: white;
   border: none;
@@ -169,7 +172,7 @@
 .no-sounds {
   padding: 1rem;
   text-align: center;
-  color: #6c757d;
+  color: #6c757d00;
 }
 
 /* Модальное окно */
@@ -270,6 +273,8 @@
 
 .subscribe-button {
   padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
   font-size: 14px;
   font-weight: 600;
   background: linear-gradient(to right, #2fc32f, #16c0de); /* светло-зелёный → тёмно-зелёный */
@@ -277,11 +282,11 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+  transition: all 0.2s;
 }
 
 .subscribe-button:hover {
-  background: linear-gradient(to right, #16e771, #09e04a);
+  background: linear-gradient(to right, #97ffc4, #a9cdff);
   transform: translateY(-1px);
 }
 
@@ -307,5 +312,114 @@
   
   .sounds-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+.profile-top-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-bottom: 1rem;
+}
+
+.profile-left {
+  flex: 2;
+  min-width: 280px;
+  background: #f7f9fc;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.profile-left h2 {
+  margin-bottom: 1.75rem;
+}
+
+.profile-left .user-info {
+  margin-top: 1rem;
+}
+
+.profile-right {
+  flex: 1;
+  min-width: 260px;
+}
+
+.subscription-banner {
+  background: #f7f9fc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+}
+
+.subscription-banner h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  color: #343a40;
+}
+
+.subscription-banner ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 1rem 0;
+}
+
+.subscription-banner ul li {
+  margin-bottom: 8px;
+  color: #495057;
+}
+
+.subscribe-button.big {
+  display: block;
+  margin: 20px auto 0 auto; /* ← центрирует только кнопку */
+  background: linear-gradient(135deg, #2fc32f, #16c0de);
+  color: white;
+  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.4s ease, transform 0.2s ease;
+  animation: fadeInUp 0.4s ease-out;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.subscribe-button.big:hover {
+  background: linear-gradient(135deg, #16c662, #4bdcc3);
+  transform: scale(1.05);
+  box-shadow: 0 2px 50px rgba(131, 214, 182, 0.234);
+}
+
+
+.cancel-subscription-button.subtle {
+  background: none;
+  border: none;
+  color: #888;
+  margin-top: 20px;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@media (max-width: 768px) {
+  .profile-top-columns {
+    flex-direction: column;
+  }
+
+  .profile-right {
+    margin-top: -1rem;
   }
 }

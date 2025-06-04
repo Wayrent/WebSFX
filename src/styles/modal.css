@@ -22,13 +22,22 @@
 }
 
 .modal-close-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  cursor: pointer;
+  background: red;
+    position: absolute;
+    top: -0.5px;
+    right: 10px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1;
+    transition: all 0.2s;
 }
 
 h3 {
@@ -46,7 +55,7 @@ button {
 }
 
 button:hover {
-  background-color: #218838;
+  background-color: #a4a4a4;
 }
 
 form {
