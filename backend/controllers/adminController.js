@@ -5,8 +5,9 @@ const getAllUsers = async (req, res) => {
   try {
     // Запрос только существующих полей
     const result = await query(
-      'SELECT id, username, email, role FROM users ORDER BY id ASC'
+    'SELECT id, username, email, role, subscription_status, subscription_start, subscription_end FROM users ORDER BY id ASC'
     );
+
     
     res.status(200).json({ 
       success: true, 
@@ -110,9 +111,32 @@ const deleteUser = async (req, res) => {
     }
   };
 
+const updateUserSubscription = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const now = new Date();
+  const end = new Date(now);
+  end.setMonth(end.getMonth() + 1); // на 30 дней
+
+  try {
+    await query(
+      'UPDATE users SET subscription_status = $1, subscription_start = $2, subscription_end = $3 WHERE id = $4',
+      [status, status === 'active' ? now : null, status === 'active' ? end : null, id]
+    );
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Ошибка обновления подписки:', err);
+    res.status(500).json({ error: 'Ошибка обновления подписки' });
+  }
+};
+
+
 module.exports = {
   getAllUsers,
   updateUser,
   resetPassword,
-  deleteUser
+  deleteUser,
+  updateUserSubscription
 };

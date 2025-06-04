@@ -6,6 +6,7 @@ import api from '../services/api';
 import '../styles/adminUsers.css';
 import { toast } from 'react-toastify';
 import { showConfirm } from '../components/ConfirmDialog'; // ← добавлено
+import AdminSubscriptionModal from '../components/AdminSubscriptionModal';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -14,6 +15,13 @@ const AdminUsers = () => {
   const [editingId, setEditingId] = useState(null);
   const [editData, setEditData] = useState({});
   const navigate = useNavigate();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const openSubscriptionModal = (user) => {
+    setSelectedUser(user);
+    setShowModal(true);
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -150,6 +158,10 @@ const AdminUsers = () => {
                   >
                     <FontAwesomeIcon icon={faTimes} /> Отмена
                   </button>
+                  <button onClick={() => openSubscriptionModal(user)}>
+                    Подписка
+                  </button>
+
                 </div>
               </>
             ) : (
@@ -186,6 +198,20 @@ const AdminUsers = () => {
           </div>
         ))}
       </div>
+        {showModal && selectedUser && (
+      <AdminSubscriptionModal
+        user={selectedUser}
+        onClose={() => setShowModal(false)}
+        onUpdated={() => {
+          // обновим список пользователей после изменений подписки
+          api.get('/admin/users').then(res => {
+            if (res.data?.success) {
+              setUsers(res.data.data);
+            }
+          });
+        }}
+      />
+    )}
     </div>
   );
 };

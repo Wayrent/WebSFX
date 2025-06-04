@@ -7,10 +7,11 @@ const getUserData = async (req, res) => {
     return res.status(401).json({ error: 'User ID not found in token' });
   }
   try {
-    const result = await query(
-      'SELECT id, email, username, note, subscription_status, last_download, role FROM users WHERE id = $1',
-      [userId]
-    );
+  const result = await query(
+    'SELECT id, email, username, note, subscription_status, subscription_start, subscription_end, role FROM users WHERE id = $1',
+    [userId]
+  );
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }

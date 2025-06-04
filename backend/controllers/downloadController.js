@@ -66,10 +66,10 @@ const handleDownload = async (req, res) => {
         user.downloads_today = 0;
       }
 
-      const limit = user.subscription_status === 'active' ? Infinity : 20;
+      const limit = user.subscription_status === 'active' ? Infinity : 30;
       if (user.downloads_today >= limit) {
         return res.status(403).json({
-          error: 'Превышен дневной лимит скачиваний. Купите подписку.'
+          error: 'Превышен дневной лимит скачиваний. Для безлимитного скачивания и доступа к уникальным звукам купите подписку.'
         });
       }
 

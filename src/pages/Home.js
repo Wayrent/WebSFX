@@ -112,7 +112,7 @@ const Home = ({ searchFilters = {} }) => {
 
   return (
     <div className="home-container">
-      <h1>Sound Library</h1>
+      <h1>Библиотека звуков</h1>
       
       {error && (
         <div className="error-message">

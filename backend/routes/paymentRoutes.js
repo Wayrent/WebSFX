@@ -1,12 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { createPayment, handleWebhook } = require('../controllers/paymentController');
+const paymentController = require('../controllers/paymentController');
 const { verifyToken } = require('../middleware/authMiddleware');
 
-// Создание платежа пользователем
-router.post('/create', verifyToken, createPayment);
+// Создание платежа
+router.post('/create', verifyToken, paymentController.createPayment);
 
-// Webhook от ЮKassa (важно: raw-обработчик!)
-router.post('/webhook', express.raw({ type: 'application/json' }), handleWebhook);
+// Демонстрационная подписка
+router.post('/simulate', verifyToken, paymentController.simulateSubscription);
+
+// Отмена подписки
+router.post('/cancel', verifyToken, paymentController.cancelSubscription);
+
+// Webhook от ЮKassa
+router.post('/webhook', express.raw({ type: 'application/json' }), paymentController.handleWebhook);
 
 module.exports = router;

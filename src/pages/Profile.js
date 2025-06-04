@@ -187,10 +187,17 @@ const Profile = () => {
   };
 
   
-  const handleSubscribe = async () => {
+    const handleSubscribe = async () => {
+    const token = localStorage.getItem('token'); // ← временно, надёжно
+
+    if (!token) {
+      toast.error('Вы не авторизованы');
+      return;
+    }
+
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/payment/create',
+        'http://localhost:5000/api/payment/simulate',
         {},
         {
           headers: {
@@ -198,14 +205,36 @@ const Profile = () => {
           }
         }
       );
-      if (response.data.url) {
-        window.location.href = response.data.url;
-      }
+
+      toast.success('Подписка активирована (демо)');
+      window.location.reload();
     } catch (err) {
-      console.error('Ошибка при создании оплаты:', err);
-      toast.error('Не удалось создать оплату. Попробуйте позже.');
+      console.error('Ошибка активации подписки:', err);
+      toast.error('Не удалось активировать подписку');
     }
   };
+
+  const handleCancelSubscription = async () => {
+    const token = localStorage.getItem('token');
+
+    try {
+      await axios.post(
+        'http://localhost:5000/api/payment/cancel',
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      toast.success('Подписка отменена');
+      window.location.reload();
+    } catch (err) {
+      console.error('Ошибка отмены подписки:', err);
+      toast.error('Не удалось отменить подписку');
+    }
+  };
+
+
 
   if (isLoading) {
     return <LoadingSpinner message="Загружаем ваш профиль..." />;
@@ -240,15 +269,41 @@ const Profile = () => {
           <div className="info-row">
             <strong>Подписка:</strong>{' '}
             {userData.subscription_status === 'active' ? (
-              <span className="subscription-active"> активна ✅</span>
-            ) : (
-              <span className="subscription-inactive-wrapper">
-                <span className="subscription-inactive">не активна ❌</span>
-                <button onClick={handleSubscribe} className="subscribe-button">
-                  Купить за 50₽ / мес
-                </button>
-              </span>
-            )}
+            <span className="subscription-active">
+              активна ✅
+              {userData.subscription_end && (
+                <>
+                  {' '}(
+                  <span
+                    style={{
+                      color:
+                        (new Date(userData.subscription_end) - Date.now()) / (1000 * 60 * 60 * 24) <= 3
+                          ? 'red'
+                          : 'inherit'
+                    }}
+                  >
+                    {Math.ceil((new Date(userData.subscription_end) - Date.now()) / (1000 * 60 * 60 * 24))} дней
+                  </span>
+                  {' '}до окончания)
+                </>
+              )}
+              <br />
+              <button
+                onClick={handleCancelSubscription}
+                className="cancel-subscription-button"
+                style={{ marginTop: '5px' }}
+              >
+                Отменить подписку
+              </button>
+            </span>
+          ) : (
+            <span className="subscription-inactive-wrapper">
+              <span className="subscription-inactive">не активна ❌</span>
+              <button onClick={handleSubscribe} className="subscribe-button">
+                Купить за 100₽ / мес
+              </button>
+            </span>
+          )}
           </div>
           <div className="info-row">
             <strong>О себе:</strong>

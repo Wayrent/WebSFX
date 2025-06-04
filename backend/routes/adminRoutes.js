@@ -13,4 +13,7 @@ router.post('/users/:id/reset-password', adminController.resetPassword);
 
 router.delete('/users/:id', adminController.deleteUser);
 
+
+router.put('/users/:id/subscription', adminController.updateUserSubscription);
+
 module.exports = router;

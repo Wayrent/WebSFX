@@ -33,6 +33,7 @@
   
   .user-actions {
     display: flex;
+    justify-content: center;
     gap: 10px;
     margin-top: auto; /* Прижимаем кнопки к низу карточки */
     padding-top: 12px;

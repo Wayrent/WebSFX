@@ -1,33 +1,51 @@
 const YooKassa = require('yookassa');
-const { query } = require('../models/userModel');
+const { query } = require('../models/userModel'); // ✅ Исправлено
 
 const yookassa = new YooKassa({
   shopId: process.env.YOOKASSA_SHOP_ID,
   secretKey: process.env.YOOKASSA_SECRET_KEY
 });
 
-// Создание платежа
+// Демонстрационный режим подписки
+const simulateSubscription = async (req, res) => {
+  const userId = req.user?.userId;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'User ID not found' });
+  }
+
+  const now = new Date();
+  const end = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 дней вперёд
+
+  try {
+    await query(
+      'UPDATE users SET subscription_status = $1, subscription_start = $2, subscription_end = $3 WHERE id = $4',
+      ['active', now, end, userId]
+    );
+
+    console.log(`🎫 Симулированная подписка активирована для пользователя ID=${userId}`);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Ошибка активации подписки (симуляция):', err);
+    res.status(500).json({ error: 'Ошибка активации подписки' });
+  }
+};
+
+
 const createPayment = async (req, res) => {
   const userId = req.user?.userId;
-  if (!userId) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
     const payment = await yookassa.createPayment({
-      amount: {
-        value: '50.00',
-        currency: 'RUB'
-      },
+      amount: { value: '100.00', currency: 'RUB' },
       confirmation: {
         type: 'redirect',
         return_url: `${process.env.FRONTEND_URL}/payment-success`
       },
       capture: true,
       description: `Подписка на SoundFX для пользователя ID ${userId}`,
-      metadata: {
-        userId: String(userId)
-      }
+      metadata: { userId: String(userId) }
     });
 
     res.status(200).json({ url: payment.confirmation.confirmation_url });
@@ -37,23 +55,53 @@ const createPayment = async (req, res) => {
   }
 };
 
-// Вебхук для обработки успешной оплаты
+const cancelSubscription = async (req, res) => {
+  const userId = req.user?.userId;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'User ID not found' });
+  }
+
+  try {
+    await query(
+      'UPDATE users SET subscription_status = $1, subscription_start = NULL, subscription_end = NULL WHERE id = $2',
+      ['inactive', userId]
+    );
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Ошибка при отмене подписки:', err);
+    res.status(500).json({ error: 'Не удалось отменить подписку' });
+  }
+};
+
+
 const handleWebhook = async (req, res) => {
   try {
     const event = req.body;
-
     if (event.event === 'payment.succeeded') {
       const userId = event.object.metadata?.userId;
-
       if (userId) {
-        await query(
-          'UPDATE users SET subscription_status = $1 WHERE id = $2',
-          ['active', userId]
-        );
+        const now = new Date();
+        const end = new Date(now);
+        end.setMonth(now.getMonth() + 1);
+
+        await query(`
+          UPDATE users SET 
+            subscription_status = 'active',
+            subscription_start = $1,
+            subscription_end = $2
+          WHERE id = $3
+        `, [now, end, userId]);
+
+        await query(`
+          INSERT INTO subscription_history (user_id, activated_at, expires_at)
+          VALUES ($1, $2, $3)
+        `, [userId, now, end]);
+
         console.log(`✅ Подписка активирована для пользователя ID=${userId}`);
       }
     }
-
     res.status(200).send('OK');
   } catch (err) {
     console.error('Ошибка обработки вебхука:', err);
@@ -63,5 +111,8 @@ const handleWebhook = async (req, res) => {
 
 module.exports = {
   createPayment,
-  handleWebhook
+  handleWebhook,
+  simulateSubscription,
+  cancelSubscription
 };
+
