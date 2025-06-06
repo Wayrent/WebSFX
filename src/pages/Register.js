@@ -25,8 +25,10 @@ const Register = () => {
       });
 
       if (response.data.success) {
-        setMessage(response.data.message);
-        setStep(2); // Показываем форму для кода
+        // Сохраняем email для подтверждения
+        localStorage.setItem('pendingEmail', email);
+        // Перенаправляем на страницу подтверждения
+        navigate('/verify-code', { state: { email } });
       } else {
         setError(response.data.error || 'Ошибка регистрации');
       }
@@ -56,6 +58,7 @@ const Register = () => {
       setError(err.response?.data?.error || 'Ошибка подтверждения');
     }
   };
+
 
   return (
     <div className="auth-container">

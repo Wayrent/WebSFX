@@ -15,6 +15,7 @@ const getUserData = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
+    console.log('USER DATA FROM DB:', result.rows[0]);
     res.status(200).json(result.rows[0]);
   } catch (error) {
     console.error('Error fetching user data:', error);

@@ -264,6 +264,7 @@ export const removeSoundFromCollection = async (collectionId, soundId) => {
 export const getUserProfile = async () => {
   try {
     const response = await api.get('/user/profile');
+    console.log('FROM getUserProfile:', response.data);
     return {
       success: true,
       data: {
@@ -272,7 +273,9 @@ export const getUserProfile = async () => {
         username: response.data.username,
         role: response.data.role,
         note: response.data.note,
-        subscription_status: response.data.subscription_status
+        subscription_status: response.data.subscription_status, // ← вот это не забудь!
+        subscription_start: response.data.subscription_start,
+        subscription_end: response.data.subscription_end
       }
     };
   } catch (error) {

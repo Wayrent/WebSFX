@@ -122,6 +122,7 @@
 
 .collection-header:hover {
   background-color: #e9ecef;
+  border-radius: 8px;
 }
 
 .collection-actions {
@@ -172,7 +173,7 @@
 .no-sounds {
   padding: 1rem;
   text-align: center;
-  color: #6c757d00;
+  color: #000000;
 }
 
 /* Модальное окно */
@@ -222,6 +223,7 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  
 }
 
 .confirm-button {
@@ -345,10 +347,11 @@
 }
 
 .subscription-banner {
-  background: #f7f9fc;
+  background: #f7fcfb;
   border-radius: 12px;
   padding: 1.5rem;
   border: 1px solid #e0e0e0;
+  position: relative;
 }
 
 .subscription-banner h3 {
@@ -401,6 +404,21 @@
   text-decoration: underline;
   font-size: 14px;
 }
+
+.subscription-history-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 18px;
+  transition: color 0.2s;
+}
+
+.subscription-history-button:hover {
+  color: #007bff;
+}
+
 
 @keyframes fadeInUp {
   from {

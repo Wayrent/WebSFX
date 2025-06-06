@@ -52,9 +52,37 @@ const registerUser = async (req, res) => {
     }
 
     const emailCheck = await query('SELECT * FROM users WHERE email = $1', [email]);
-    if (emailCheck.rows.length) {
-      return res.status(400).json({ error: 'Почта уже зарегистрирована' });
+
+    if (emailCheck.rows.length > 0) {
+      const user = emailCheck.rows[0];
+      if (user.email_verified) {
+        return res.status(400).json({ error: 'Почта уже зарегистрирована' });
+      } else {
+        // пользователь есть, но не подтвердил email — обновим код
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const expires = new Date(Date.now() + 3600000);
+
+        await query(
+          'UPDATE users SET verification_code = $1, verification_expires = $2 WHERE email = $3',
+          [verificationCode, expires, email]
+        );
+
+        const mailOptions = {
+          from: `"Auris SFX" <${process.env.EMAIL_FROM}>`,
+          to: email,
+          subject: 'Повторная отправка кода',
+          text: `Ваш код подтверждения: ${verificationCode}. Он действителен в течение 1 часа.`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return res.status(200).json({
+          success: true,
+          message: 'Код подтверждения повторно отправлен на email'
+        });
+      }
     }
+
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -130,6 +158,45 @@ const verifyRegistrationCode = async (req, res) => {
   }
 };
 
+const resendVerificationCode = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const result = await query('SELECT * FROM users WHERE email = $1', [email]);
+    if (!result.rows.length) {
+      return res.status(404).json({ success: false, error: 'Пользователь не найден' });
+    }
+
+    const user = result.rows[0];
+    if (user.email_verified) {
+      return res.status(400).json({ success: false, error: 'Почта уже подтверждена' });
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 3600000);
+
+    await query(
+      'UPDATE users SET verification_code = $1, verification_expires = $2 WHERE email = $3',
+      [code, expires, email]
+    );
+
+    const mailOptions = {
+      from: `"Auris SFX" <${process.env.EMAIL_FROM}>`,
+      to: email,
+      subject: 'Повторная отправка кода',
+      text: `Ваш новый код подтверждения: ${code}. Он действителен в течение 1 часа.`
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ success: true, message: 'Код отправлен повторно' });
+  } catch (error) {
+    console.error('Ошибка при повторной отправке кода:', error);
+    res.status(500).json({ success: false, error: 'Ошибка сервера' });
+  }
+};
+
+
 // -------------------- ЛОГИН --------------------
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -146,6 +213,31 @@ const loginUser = async (req, res) => {
     }
 
     const user = result.rows[0];
+
+      if (!user.email_verified) {
+    const newCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const newExpires = new Date(Date.now() + 3600000); // 1 час
+
+    await query(
+      'UPDATE users SET verification_code = $1, verification_expires = $2 WHERE id = $3',
+      [newCode, newExpires, user.id]
+    );
+
+    const mailOptions = {
+      from: `"Auris SFX" <${process.env.EMAIL_FROM}>`,
+      to: user.email,
+      subject: 'Подтверждение email (повторно)',
+      text: `Ваш код подтверждения: ${newCode}. Он действителен в течение 1 часа.`
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return res.status(403).json({
+      success: false,
+      error: 'Почта не подтверждена. Мы повторно отправили код подтверждения на ваш email.'
+    });
+  }
+
 
     if (!user.password) {
       return res.status(500).json({ success: false, error: 'Пароль отсутствует в базе данных' });
@@ -273,5 +365,6 @@ module.exports = {
   requestPasswordReset,
   verifyResetCode,
   resetPassword,
-  verifyRegistrationCode // ← ЭТО ДОБАВЬ
+  verifyRegistrationCode, // ← ЭТО ДОБАВЬ
+  resendVerificationCode
 };

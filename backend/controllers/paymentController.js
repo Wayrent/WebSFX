@@ -23,6 +23,12 @@ const simulateSubscription = async (req, res) => {
       ['active', now, end, userId]
     );
 
+    // Добавление записи в историю подписки
+    await query(
+      'INSERT INTO subscription_history (user_id, activated_at, expires_at) VALUES ($1, $2, $3)',
+      [userId, now, end]
+    );
+
     console.log(`🎫 Симулированная подписка активирована для пользователя ID=${userId}`);
     res.status(200).json({ success: true });
   } catch (err) {
@@ -30,7 +36,6 @@ const simulateSubscription = async (req, res) => {
     res.status(500).json({ error: 'Ошибка активации подписки' });
   }
 };
-
 
 const createPayment = async (req, res) => {
   const userId = req.user?.userId;
@@ -75,6 +80,21 @@ const cancelSubscription = async (req, res) => {
   }
 };
 
+const getSubscriptionHistory = async (req, res) => {
+  const userId = req.user?.userId;
+  try {
+    const result = await query(
+    'SELECT activated_at AS start, expires_at AS "end" FROM subscription_history WHERE user_id = $1 ORDER BY activated_at DESC',
+    [userId]
+  );
+
+    res.json({ history: result.rows });
+  } catch (error) {
+    console.error('Ошибка при получении истории подписки:', error);
+    res.status(500).json({ error: 'Не удалось загрузить историю подписки' });
+  }
+};
+
 
 const handleWebhook = async (req, res) => {
   try {
@@ -113,6 +133,7 @@ module.exports = {
   createPayment,
   handleWebhook,
   simulateSubscription,
-  cancelSubscription
+  cancelSubscription,
+  getSubscriptionHistory
 };
 

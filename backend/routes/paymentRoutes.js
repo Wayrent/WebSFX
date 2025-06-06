@@ -15,4 +15,6 @@ router.post('/cancel', verifyToken, paymentController.cancelSubscription);
 // Webhook от ЮKassa
 router.post('/webhook', express.raw({ type: 'application/json' }), paymentController.handleWebhook);
 
+router.get('/history', verifyToken, paymentController.getSubscriptionHistory);
+
 module.exports = router;

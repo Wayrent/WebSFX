@@ -7,7 +7,8 @@ const {
   verifyResetCode,
   resetPassword,
   verifyEmail, // ← добавь это
-  verifyRegistrationCode
+  verifyRegistrationCode,
+  resendVerificationCode
 } = require('../controllers/authController');
 
 
@@ -18,5 +19,6 @@ router.post('/login', loginUser);
 router.post('/request-reset', requestPasswordReset);
 router.post('/verify-reset', verifyResetCode);
 router.post('/reset-password', resetPassword);
+router.post('/resend-code', resendVerificationCode);
 
 module.exports = router;

@@ -99,3 +99,31 @@
   color: red;
   margin-top: 10px;
 }
+
+.resend-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.resend-section p {
+  margin-bottom: 10px;
+}
+
+.resend-section button {
+  background: none;
+  border: none;
+  color: #28a745;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 5px;
+}
+
+.resend-section button:hover {
+  color: #eaffef;
+}
+
+.resend-section button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  text-decoration: none;
+}

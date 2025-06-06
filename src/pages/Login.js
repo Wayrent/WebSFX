@@ -12,7 +12,7 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -20,6 +20,14 @@ const Login = () => {
     try {
       const result = await login({ email, password });
       if (!result.success) {
+        // Если почта не подтверждена
+        if (result.error.includes('не подтверждена')) {
+          // Сохраняем email для подтверждения
+          localStorage.setItem('pendingEmail', email);
+          // Перенаправляем на страницу подтверждения
+          navigate('/verify-code', { state: { email } });
+          return;
+        }
         throw new Error(result.error || 'Ошибка входа');
       }
       // Перенаправление после успешного входа

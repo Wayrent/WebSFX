@@ -6,7 +6,8 @@ import {
   faChevronRight,
   faTimes,
   faEdit,
-  faCheck
+  faCheck,
+  faClockRotateLeft
 } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '../components/LoadingSpinner';
 import SoundItem from '../components/SoundItem';
@@ -37,6 +38,8 @@ const Profile = () => {
   const [error, setError] = useState('');
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [editedNote, setEditedNote] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
+  const [subscriptionHistory, setSubscriptionHistory] = useState([]);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -53,6 +56,9 @@ const Profile = () => {
         }
 
         setUserData(profileResponse.data);
+        console.log('STATUS:', profileResponse.subscription_status);
+        console.log('SUBSCRIPTION END:', profileResponse.data.subscription_end);
+        console.log('PARSED DATE:', new Date(profileResponse.data.subscription_end));
         setEditedNote(profileResponse.data.note || '');
         
         if (collectionsResponse.success) {
@@ -68,6 +74,26 @@ const Profile = () => {
 
     fetchProfileData();
   }, []);
+
+const fetchHistory = async () => {
+  try {
+    const localToken = localStorage.getItem('token');
+
+    if (!localToken) {
+      toast.error('Токен не найден. Пожалуйста, войдите заново.');
+      return;
+    }
+
+    const response = await axios.get('http://localhost:5000/api/payment/history', {
+      headers: { Authorization: `Bearer ${localToken}` }
+    });
+    setSubscriptionHistory(response.data.history || []);
+    setShowHistory(true);
+  } catch (err) {
+    console.error('Ошибка получения истории:', err);
+    toast.error('Не удалось загрузить историю подписки');
+  }
+};
 
   const fetchSoundsInCollection = async (collectionId) => {
     try {
@@ -126,6 +152,30 @@ const Profile = () => {
       onConfirm: () => performCollectionDeletion(collectionId),
       onCancel: () => console.log('Удаление отменено')
     });
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString || typeof dateString !== 'string') return null;
+
+    const parsed = Date.parse(dateString);
+    if (isNaN(parsed)) return null;
+
+    const date = new Date(parsed);
+    return date.toLocaleDateString('ru-RU', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const getDaysLeft = (end) => {
+    if (!end) return null;
+
+    const endDate = new Date(end);
+    if (isNaN(endDate)) return null;
+
+    const diff = endDate - new Date();
+    return Math.max(Math.ceil(diff / (1000 * 60 * 60 * 24)), 0);
   };
 
   const performCollectionDeletion = async (collectionId) => {
@@ -293,6 +343,9 @@ const Profile = () => {
       {/* Правая колонка: подписка */}
       <div className="profile-right">
         <div className="subscription-banner">
+        <div className="subscription-history-button" onClick={fetchHistory} title="История подписки">
+          <FontAwesomeIcon icon={faClockRotateLeft} />
+        </div>
           {userData.subscription_status === 'active' ? (
             <>
               <h3>Спасибо за подписку! 🎧</h3>
@@ -301,17 +354,27 @@ const Profile = () => {
                 <li>✔ Доступ к эксклюзивным звукам</li>
                 <li>✔ Поддержка проекта</li>
               </ul>
-              <p style={{ fontStyle: 'italic', marginTop: '10px' }}>
-                Осталось дней:{' '}
-                <strong style={{
-                  color:
-                    (new Date(userData.subscription_end) - Date.now()) / (1000 * 60 * 60 * 24) <= 3
-                      ? 'red'
-                      : 'inherit'
-                }}>
-                  {Math.ceil((new Date(userData.subscription_end) - Date.now()) / (1000 * 60 * 60 * 24))}
-                </strong>
-              </p>
+              {userData.subscription_end ? (
+                <>
+                  <p style={{marginTop: '10px' }}>
+                    Подписка действует до: <strong>{formatDate(userData.subscription_end)}</strong>
+                  </p>
+                  {getDaysLeft(userData.subscription_end) !== null && (
+                    <p style={{ fontSize: '14px', color: '#6c757d' }}>
+                      Осталось:{' '}
+                      <strong style={{
+                        color: getDaysLeft(userData.subscription_end) <= 3 ? 'red' : 'inherit'
+                      }}>
+                        {getDaysLeft(userData.subscription_end)} дней
+                      </strong>
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p style={{ fontStyle: 'italic', marginTop: '10px', color: '#888' }}>
+                  Дата окончания подписки не указана
+                </p>
+              )}
               <button
                 onClick={handleCancelSubscription}
                 className="cancel-subscription-button subtle"
@@ -442,6 +505,28 @@ const Profile = () => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {showHistory && (
+        <div className="modal-overlay" onClick={() => setShowHistory(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>История подписки</h3>
+            {subscriptionHistory.length === 0 ? (
+              <p>Нет записей</p>
+            ) : (
+              <ul>
+                {subscriptionHistory.map((entry, index) => (
+                  <li key={index}>
+                    <strong>Начало:</strong> {formatDate(entry.start)}<br />
+                    <strong>Окончание:</strong> {formatDate(entry.end)}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <button className="cancel-button" onClick={() => setShowHistory(false)}>
+              Закрыть
+            </button>
           </div>
         </div>
       )}

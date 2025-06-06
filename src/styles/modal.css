@@ -55,7 +55,8 @@ button {
 }
 
 button:hover {
-  background-color: #a4a4a4;
+  /* background-color: #a4a4a4; */
+  color: a4a4a4;
 }
 
 form {

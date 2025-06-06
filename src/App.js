@@ -16,6 +16,7 @@ import AdminUsers from './pages/AdminUsers';
 import PaymentSuccess from './pages/PaymentSuccess';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import VerifyCodePage from './pages/VerifyCodePage';
 
 const PrivateRoute = ({ element: Element }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -64,6 +65,7 @@ const App = () => {
               <Route path="/request-reset" element={<PasswordResetPage />} />
               <Route path="/reset-password" element={<PasswordResetPage />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
+              <Route path="/verify-code" element={<VerifyCodePage />} />
             </Routes>
           </div>
           <footer className="footer">
