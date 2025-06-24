@@ -1,5 +1,5 @@
 const YooKassa = require('yookassa');
-const { query } = require('../models/userModel'); // ✅ Исправлено
+const { query } = require('../models/userModel');
 
 const yookassa = new YooKassa({
   shopId: process.env.YOOKASSA_SHOP_ID,

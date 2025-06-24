@@ -25,9 +25,7 @@ const Register = () => {
       });
 
       if (response.data.success) {
-        // Сохраняем email для подтверждения
         localStorage.setItem('pendingEmail', email);
-        // Перенаправляем на страницу подтверждения
         navigate('/verify-code', { state: { email } });
       } else {
         setError(response.data.error || 'Ошибка регистрации');

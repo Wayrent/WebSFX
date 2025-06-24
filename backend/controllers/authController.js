@@ -254,7 +254,6 @@ const loginUser = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    // ✅ Переносим скачивания гостя в аккаунт после входа
     await migrateGuestDownloadsToUser(user.id, ip);
 
     res.status(200).json({
@@ -365,6 +364,6 @@ module.exports = {
   requestPasswordReset,
   verifyResetCode,
   resetPassword,
-  verifyRegistrationCode, // ← ЭТО ДОБАВЬ
+  verifyRegistrationCode,
   resendVerificationCode
 };

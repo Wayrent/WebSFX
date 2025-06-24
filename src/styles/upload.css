@@ -15,56 +15,32 @@
 .upload-container form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1 rem;
+  padding: 0 1rem; /* Добавляем отступы слева и справа для формы */
 }
 
 .upload-container label {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  text-align: left;
+  width: 100%; /* Занимаем всю доступную ширину */
 }
 
 .upload-container input,
 .upload-container select {
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%; /* Ограничиваем максимальную ширину */
 }
 
-.upload-container input[type="file"] {
-  padding: 0;
-}
-
-.upload-container button {
-  padding: 0.75rem;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 1rem;
-}
-
-.upload-container button:disabled {
-  background-color: #cccccc;
-}
-
-.error {
-  color: #dc3545;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-}
-
-.success {
-  color: #28a745;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  border-radius: 4px;
+.file-upload-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .custom-file-input {
@@ -73,10 +49,19 @@
   cursor: pointer;
   color: #555;
   background-color: #e9ecef;
-  padding: 0.6rem 1rem;
+  padding: 0.75rem 1rem;
   border: 1px solid #ccc;
   border-radius: 5px;
   transition: background 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.custom-file-input span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .custom-file-input input[type="file"] {
@@ -91,4 +76,41 @@
 
 .custom-file-input:hover {
   background-color: #d8e0e3;
+}
+
+.upload-container button {
+  padding: 0.75rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  width: 100%;
+  font-size: 1rem;
+  max-width: 100%; /* Ограничиваем максимальную ширину кнопки */
+}
+
+.upload-container button:disabled {
+  background-color: #cccccc;
+}
+
+.error {
+  color: #dc3545;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  text-align: left; /* Выравнивание текста по левому краю */
+}
+
+.success {
+  color: #28a745;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  text-align: left; /* Выравнивание текста по левому краю */
 }

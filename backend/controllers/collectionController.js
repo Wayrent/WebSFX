@@ -122,7 +122,7 @@ const addSoundToCollection = async (req, res) => {
   } catch (error) {
     console.error('Error adding sound:', error);
     
-    if (error.code === '23505') { // Unique violation
+    if (error.code === '23505') {
       return res.status(400).json({ 
         success: false,
         error: 'Sound already exists in this collection' 
